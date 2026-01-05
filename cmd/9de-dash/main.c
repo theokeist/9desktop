@@ -1,4 +1,3 @@
-\
 #include <u.h>
 #include <libc.h>
 #include <draw.h>
@@ -16,28 +15,30 @@
 static Ui9 ui;
 
 static char*
-home(void)
+userhome(void)
 {
-	char *h = getenv("home");
-	if(h == nil) h = getenv("HOME");
-	if(h == nil) h = "/usr";
-	return h;
+	char *home = getenv("home");
+	if(home == nil)
+		home = getenv("HOME");
+	if(home == nil)
+		home = "/usr";
+	return home;
 }
 
 static char*
 runpath(char *name)
 {
-	static char p[512];
-	snprint(p, sizeof p, "%s/lib/9de/run/%s", home(), name);
-	return p;
+	static char pathbuf[512];
+	snprint(pathbuf, sizeof pathbuf, "%s/lib/9de/run/%s", userhome(), name);
+	return pathbuf;
 }
 
 static void
 ensure_run_dir(void)
 {
-	char dir[512];
-	snprint(dir, sizeof dir, "%s/lib/9de/run", home());
-	create(dir, OREAD, DMDIR|0755);
+	char runpath[512];
+	snprint(runpath, sizeof runpath, "%s/lib/9de/run", userhome());
+	create(runpath, OREAD, DMDIR|0755);
 }
 
 static void
