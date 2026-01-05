@@ -1,4 +1,3 @@
-\
 #include <u.h>
 #include <libc.h>
 #include <draw.h>
@@ -67,10 +66,10 @@ static char statusline[256] = "Ready.";
 /* -------------- small helpers -------------- */
 
 static char*
-home(void)
+userhome(void)
 {
-	char *h = getenv("home");
-	return h ? h : "/usr/glenda";
+	char *home = getenv("home");
+	return home ? home : "/usr/glenda";
 }
 
 static void
@@ -395,7 +394,7 @@ loadcfg_fromfile(void)
 	char path[256];
 	char *in, *p;
 
-	snprint(path, sizeof path, "%s/lib/9de/config.rc", home());
+	snprint(path, sizeof path, "%s/lib/9de/config.rc", userhome());
 	in = nil;
 	if(readfile(path, &in) < 0)
 		return;
@@ -645,7 +644,7 @@ onmouse(Mouse m)
 
 	if(hit_apply(top, m.xy)){
 		char path[256];
-		snprint(path, sizeof path, "%s/lib/9de/config.rc", home());
+		snprint(path, sizeof path, "%s/lib/9de/config.rc", userhome());
 		if(cfg_apply(path) < 0){
 			snprint(statusline, sizeof statusline, "Write failed: %r");
 		}else{

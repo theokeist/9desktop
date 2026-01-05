@@ -1,3 +1,5 @@
+</$objtype/mkfile
+
 TARG=9de-panel
 CFLAGS=-I../../include
 OFILES=main.$O
