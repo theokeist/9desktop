@@ -1,0 +1,8 @@
+#!/bin/rc
+# dev helper (in-tree): runs 9de-shell from ./cmd/9de-shell
+
+if(! test -e ./cmd/9de-shell/9de-shell){
+	echo '9de-start: build first: mk'
+	exits 'build-required'
+}
+./cmd/9de-shell/9de-shell -d

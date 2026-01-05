@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>9DE docs — Libraries</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="header">
+    <div class="wrap">
+      <div class="title">9DE docs</div>
+      <div class="meta">desktop-only · shell contract · declarative UI</div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <aside class="sidebar" role="navigation" aria-label="Documentation navigation">
+      <div class="group">
+  <div class="gtitle">Overview</div>
+  <a data-nav href="index.html">Getting started</a>
+  <a data-nav href="naming.html">Naming & entrypoints</a>
+  <a data-nav href="roadmap.html">Roadmap</a>
+</div>
+<div class="group">
+  <div class="gtitle">System</div>
+  <a data-nav href="system.html">9front + 9DE integration</a>
+  <a data-nav href="srv9de.html">/srv/9de control plane</a>
+  <a data-nav href="user.html">User guide</a>
+  <a data-nav href="admin.html">Admin guide</a>
+</div>
+<div class="group">
+  <div class="gtitle">Architecture</div>
+  <a data-nav href="shell.html">Shell contract</a>
+  <a data-nav href="surfaces.html">Surfaces</a>
+  <a data-nav href="rows.html">Rows</a>
+  <a data-nav href="declarative.html">Declarative UI</a>
+  <a data-nav href="appearance.html">Appearance &amp; style</a>
+  <a data-nav href="runtime.html">Runtime & events</a>
+  <a data-nav href="realtime.html">Realtime & animation</a>
+  <a data-nav href="scheduler.html">Scheduler</a>
+  <a data-nav href="services.html">Services & UI</a>
+</div>
+<div class="group">
+  <div class="gtitle">Components</div>
+  <a data-nav href="control.html">Control Center</a>
+  <a data-nav href="panel.html">9de-panel</a>
+  <a data-nav href="dash.html">9de-dash</a>
+  <a data-nav href="desktop.html">9de-desktop (Finder)</a>
+  <a data-nav href="settings.html">9de-settings</a>
+</div>
+<div class="group">
+  <div class="gtitle">Deep dive</div>
+  <a data-nav href="codewalk.html">Code walkthrough</a>
+  <a data-nav href="contracts.html">Contracts & invariants</a>
+  <a data-nav href="ipc.html">IPC & 9P services</a>
+  <a data-nav href="panel_api.html">Panel module API</a>
+  <a data-nav href="lib9deui_ref.html">lib9deui reference</a>
+  <a data-nav href="perf.html">Performance rules</a>
+  <a data-nav href="faq.html">FAQ</a>
+</div>
+<div class="group">
+  <div class="gtitle">Ops</div>
+  <a data-nav href="config.html">Configuration</a>
+  <a data-nav href="logging.html">Logging</a>
+  <a data-nav href="dev.html">Development workflow</a>
+  <a data-nav href="examples.html">Examples</a>
+  <a data-nav href="libraries.html">Libraries</a>
+  <a data-nav href="lib9deui.html">lib9deui</a>
+  <a data-nav href="lib9deui_components.html">UI components</a>
+  <a data-nav href="lib9deui_runtime.html">UI runtime API</a>
+  <a data-nav href="lib9deui_async.html">Async & services</a>
+</div>
+    </aside>
+
+    <main class="content">
+      <h2>Libraries</h2>
+<p class="muted">
+This section documents the “9DE SDK”: libraries and contracts used by shell + apps.
+Some APIs are <b>planned</b> (documented now to lock the direction early).
+</p>
+
+<h3>What exists today</h3>
+<div class="kv">
+  <div><code>lib9deui</code></div><div>Small UI helper library used by panel/dash/demo (colors, text helpers, surfaces).</div>
+</div>
+
+<h3>What we are standardizing next</h3>
+<div class="kv">
+  <div><code>lib9deui (runtime)</code></div><div>Declarative node tree + measure/layout/draw/event + invalidation.</div>
+  <div><code>lib9desvc</code></div><div>Service/status binding over 9p (shell control plane).</div>
+  <div><code>lib9delog</code></div><div>Consistent logging helpers (.log/.err, tail view model).</div>
+</div>
+
+<div class="callout">
+  The point is not to build a huge toolkit. It’s to make apps “safe to write”:
+  consistent events, focus rules, and predictable performance under heavy load.
+</div>
+
+<h3>Implemented vs planned (read this before coding)</h3>
+<div class="callout">
+  <b>Implemented</b> means “it is in the tree and used by panel/shell today”.
+  <b>Planned</b> means “direction locked, code may not exist yet”.
+</div>
+<div class="kv">
+  <div><b>Implemented</b></div><div><code>lib9deui</code>, <code>/srv/9de</code> (shell control plane), session modes (<code>normal/test/dev</code>).</div>
+  <div><b>Planned</b></div><div><code>lib9desvc</code> bindings, declarative runtime expansion, desktop launchers import/export.</div>
+</div>
+<p>Next: <a href="lib9deui_ref.html">lib9deui reference</a>, <a href="ipc.html">IPC &amp; 9P</a>.</p>
+
+<h3>Reference pages</h3>
+<ul>
+  <li><a href="lib9deui.html">lib9deui</a> (what you can use today + near-term additions)</li>
+  <li><a href="lib9deui_components.html">UI components</a> (buttons, rows, lists, spinners)</li>
+  <li><a href="lib9deui_runtime.html">UI runtime API</a> (declarative tree, invalidation, focus)</li>
+  <li><a href="lib9deui_async.html">Async & services</a> (workers, service streams, progress)</li>
+</ul>
+
+      <div class="footer">9DE documentation — 2025-12-27.</div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

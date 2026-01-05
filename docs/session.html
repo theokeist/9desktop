@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>9DE docs — 9de-session</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="topbar">
+    <div class="wrap brand">
+      <h1>9DE docs</h1>
+      <div class="meta">simple · readable · project-local</div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <aside class="sidebar" role="navigation" aria-label="Documentation navigation">
+      
+    <div class="group">
+  <div class="gtitle">Overview</div>
+  <a data-nav href="index.html">Getting started</a>
+  <a data-nav href="naming.html">Naming & entrypoints</a>
+  <a data-nav href="roadmap.html">Roadmap</a>
+</div>
+<div class="group">
+  <div class="gtitle">System</div>
+  <a data-nav href="system.html">9front + 9DE integration</a>
+  <a data-nav href="srv9de.html">/srv/9de control plane</a>
+  <a data-nav href="user.html">User guide</a>
+  <a data-nav href="admin.html">Admin guide</a>
+</div>
+<div class="group">
+  <div class="gtitle">Architecture</div>
+  <a data-nav href="shell.html">Shell contract</a>
+  <a data-nav href="surfaces.html">Surfaces</a>
+  <a data-nav href="rows.html">Rows</a>
+  <a data-nav href="declarative.html">Declarative UI</a>
+  <a data-nav href="appearance.html">Appearance &amp; style</a>
+  <a data-nav href="runtime.html">Runtime & events</a>
+  <a data-nav href="realtime.html">Realtime & animation</a>
+  <a data-nav href="scheduler.html">Scheduler</a>
+  <a data-nav href="services.html">Services & UI</a>
+</div>
+<div class="group">
+  <div class="gtitle">Components</div>
+  <a data-nav href="control.html">Control Center</a>
+  <a data-nav href="panel.html">9de-panel</a>
+  <a data-nav href="dash.html">9de-dash</a>
+  <a data-nav href="desktop.html">9de-desktop (Finder)</a>
+  <a data-nav href="settings.html">9de-settings</a>
+</div>
+<div class="group">
+  <div class="gtitle">Deep dive</div>
+  <a data-nav href="codewalk.html">Code walkthrough</a>
+  <a data-nav href="contracts.html">Contracts & invariants</a>
+  <a data-nav href="ipc.html">IPC & 9P services</a>
+  <a data-nav href="panel_api.html">Panel module API</a>
+  <a data-nav href="lib9deui_ref.html">lib9deui reference</a>
+  <a data-nav href="perf.html">Performance rules</a>
+  <a data-nav href="faq.html">FAQ</a>
+</div>
+<div class="group">
+  <div class="gtitle">Ops</div>
+  <a data-nav href="config.html">Configuration</a>
+  <a data-nav href="logging.html">Logging</a>
+  <a data-nav href="dev.html">Development workflow</a>
+  <a data-nav href="examples.html">Examples</a>
+  <a data-nav href="libraries.html">Libraries</a>
+  <a data-nav href="lib9deui.html">lib9deui</a>
+  <a data-nav href="lib9deui_components.html">UI components</a>
+  <a data-nav href="lib9deui_runtime.html">UI runtime API</a>
+  <a data-nav href="lib9deui_async.html">Async & services</a>
+</div>
+
+    </aside>
+
+    <main class="content">
+      <div class="card">
+  <h2>9de-session</h2>
+  <p class="muted">
+    Early-stage CLI tool that sets up and maintains the user-level 9DE session config files.
+    Control Center will eventually call the same logic.
+  </p>
+</div>
+
+<section id="commands" class="card">
+  <h2>Commands</h2>
+  <pre><code>9de-session init
+9de-session gen
+9de-session print</code></pre>
+
+  <div class="kv">
+    <div>init</div><div>Creates <code>$home/lib/9de</code> and writes baseline defaults + empty user config.</div>
+    <div>gen</div><div>Generates <code>autostart.rc</code> from defaults + overrides.</div>
+    <div>print</div><div>Prints current paths and file contents for debugging.</div>
+  </div>
+</section>
+
+<section id="files" class="card">
+  <h2>Files owned by 9DE</h2>
+  <pre><code>$home/lib/9de/defaults.rc
+$home/lib/9de/config.rc
+$home/lib/9de/autostart.rc</code></pre>
+
+  <div class="callout">
+    Keep <code>config.rc</code> as <b>name=value</b> only. No rc logic. That makes parsing safe.
+  </div>
+</section>
+
+
+<section id="config" class="card">
+  <h2>Config keys (defaults.rc + config.rc)</h2>
+  <div class="grid2">
+    <div><code>start_panel</code></div><div><code>1</code> to start <code>9de-panel</code> via autostart.</div>
+    <div><code>start_demo</code></div><div><code>1</code> to start <code>ui9demo</code> via autostart.</div>
+
+    <div><code>ui_style</code></div><div>Predefined style preset: <code>terminal</code> (default), <code>dark</code>, <code>glass</code>.</div>
+    <div><code>ui_alpha</code></div><div>0..255. Used mainly by the <code>glass</code> preset and alpha previews.</div>
+
+    <div><code>panel_height</code></div><div>Pixel height for the top bar window (default: <code>34</code>).</div>
+    <div><code>panel_edge</code></div><div>Reserved: <code>top</code>/<code>bottom</code>. Currently top only.</div>
+
+    <div><code>logdir</code></div><div>Where autostart writes <code>.log</code> + <code>.err</code> (default: <code>$home/lib/9de/log</code>).</div>
+  </div>
+
+  <div class="callout">
+    9DE is intentionally <b>not</b> “infinite theming”. You pick a style preset (like macOS) and we keep tokens stable.
+  </div>
+</section>
+
+      <div class="footer">9DE documentation.</div>
+    <h2>Session modes</h2>
+<p>9DE has a tiny, predictable set of modes. This is intentionally not “theme profiles” like XFCE/Plasma.
+It’s a <em>startup contract</em> so you can iterate without breaking login.</p>
+
+<div class="grid2">
+  <div><code>session_mode</code></div><div><code>normal</code> | <code>test</code> | <code>dev</code></div>
+  <div><code>start_demo</code></div><div><code>1</code> enables debug surfaces/tools (runtime; no <code>9de gen</code> needed)</div>
+</div>
+
+<h3>Modes</h3>
+<ul>
+  <li><b>normal</b>: starts the shell and panel as your daily driver.</li>
+  <li><b>test</b>: same as normal, plus debug/watch windows (ui9demo, log tails, /srv events).</li>
+  <li><b>dev</b>: test mode + a repo workbench window (<code>cd $home/src/9de</code>).</li>
+</ul>
+
+<h3>How to enable</h3>
+<pre><code># $home/lib/9de/config.rc
+session_mode=test
+</code></pre>
+
+<p>You can also override at launch: <code>9de-riostart -test</code> / <code>-dev</code>.</p>
+
+        <h3>Test tools layout</h3>
+        <p>Test mode opens helper windows. Choose the placement.</p>
+        <div class="kv">
+          <div><code>test_layout</code></div><div><code>laptop</code> (default) or <code>ultrawide</code></div>
+        </div>
+        <pre><code># $home/lib/9de/config.rc
+test_layout=laptop
+# test_layout=ultrawide
+</code></pre>
+
+</main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

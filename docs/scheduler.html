@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>9DE docs — Scheduler</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="header">
+    <div class="wrap">
+      <div class="title">9DE docs</div>
+      <div class="meta">desktop-only · shell contract · declarative UI</div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <aside class="sidebar" role="navigation" aria-label="Documentation navigation">
+<div class="group">
+  <div class="gtitle">Overview</div>
+  <a data-nav href="index.html">Getting started</a>
+  <a data-nav href="naming.html">Naming & entrypoints</a>
+  <a data-nav href="roadmap.html">Roadmap</a>
+</div>
+<div class="group">
+  <div class="gtitle">System</div>
+  <a data-nav href="system.html">9front + 9DE integration</a>
+  <a data-nav href="srv9de.html">/srv/9de control plane</a>
+  <a data-nav href="user.html">User guide</a>
+  <a data-nav href="admin.html">Admin guide</a>
+</div>
+<div class="group">
+  <div class="gtitle">Architecture</div>
+  <a data-nav href="shell.html">Shell contract</a>
+  <a data-nav href="surfaces.html">Surfaces</a>
+  <a data-nav href="rows.html">Rows</a>
+  <a data-nav href="declarative.html">Declarative UI</a>
+  <a data-nav href="appearance.html">Appearance &amp; style</a>
+  <a data-nav href="runtime.html">Runtime & events</a>
+  <a data-nav href="realtime.html">Realtime & animation</a>
+  <a data-nav href="scheduler.html">Scheduler</a>
+  <a data-nav href="services.html">Services & UI</a>
+</div>
+<div class="group">
+  <div class="gtitle">Components</div>
+  <a data-nav href="control.html">Control Center</a>
+  <a data-nav href="panel.html">9de-panel</a>
+  <a data-nav href="dash.html">9de-dash</a>
+  <a data-nav href="desktop.html">9de-desktop (Finder)</a>
+  <a data-nav href="settings.html">9de-settings</a>
+</div>
+<div class="group">
+  <div class="gtitle">Deep dive</div>
+  <a data-nav href="codewalk.html">Code walkthrough</a>
+  <a data-nav href="contracts.html">Contracts & invariants</a>
+  <a data-nav href="ipc.html">IPC & 9P services</a>
+  <a data-nav href="panel_api.html">Panel module API</a>
+  <a data-nav href="lib9deui_ref.html">lib9deui reference</a>
+  <a data-nav href="perf.html">Performance rules</a>
+  <a data-nav href="faq.html">FAQ</a>
+</div>
+<div class="group">
+  <div class="gtitle">Ops</div>
+  <a data-nav href="config.html">Configuration</a>
+  <a data-nav href="logging.html">Logging</a>
+  <a data-nav href="dev.html">Development workflow</a>
+  <a data-nav href="examples.html">Examples</a>
+  <a data-nav href="libraries.html">Libraries</a>
+  <a data-nav href="lib9deui.html">lib9deui</a>
+  <a data-nav href="lib9deui_components.html">UI components</a>
+  <a data-nav href="lib9deui_runtime.html">UI runtime API</a>
+  <a data-nav href="lib9deui_async.html">Async & services</a>
+</div>
+    </aside>
+
+    <main class="content">
+<h2>Scheduler</h2>
+<p class="muted">
+The scheduler is the backbone for “alive UI”: spinners, toasts, progress, and redraw coalescing.
+It is intentionally tiny: you call <code>ui9schedtick()</code> from your UI loop.
+</p>
+
+<h3>API</h3>
+<pre><code>#include &lt;9deui/9deui.h&gt;
+
+Ui9Sched s;
+ui9schedinit(&s);
+
+int id = ui9schedadd(&s, delayms, intervalms, fn, arg);
+ui9schedcancel(&s, id);
+
+long next = ui9schednext(&s, ui9nowms());
+ui9schedtick(&s, ui9nowms());</code></pre>
+
+<h3>Patterns</h3>
+<ul>
+  <li><b>Coalesced redraw</b>: schedule a repeating timer (e.g. 16ms) that redraws only if something is dirty.</li>
+  <li><b>Spinner</b>: 25–30fps (40–33ms interval) is enough.</li>
+  <li><b>Commit-on-release</b>: sliders update preview often, but commit only on mouse-up to avoid storms.</li>
+</ul>
+
+<h3>Wake strategy on 9front</h3>
+<p>
+A common pattern is <code>alarm(nextms)</code> to wake the process out of <code>event()</code>.
+When the alarm note interrupts the blocking call, you run <code>ui9schedtick()</code> and redraw if needed.
+</p>
+
+<p class="muted">See: <code>examples/declarative/scheduler_tick_pseudocode.c</code>.</p>
+
+      <div class="footer">9DE documentation — 2025-12-27.</div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

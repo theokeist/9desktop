@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>9DE docs — UI components</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="header">
+    <div class="wrap">
+      <div class="title">9DE docs</div>
+      <div class="meta">desktop-only · shell contract · declarative UI</div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <aside class="sidebar" role="navigation" aria-label="Documentation navigation">
+      <div class="group">
+  <div class="gtitle">Overview</div>
+  <a data-nav href="index.html">Getting started</a>
+  <a data-nav href="naming.html">Naming & entrypoints</a>
+  <a data-nav href="roadmap.html">Roadmap</a>
+</div>
+<div class="group">
+  <div class="gtitle">System</div>
+  <a data-nav href="system.html">9front + 9DE integration</a>
+  <a data-nav href="srv9de.html">/srv/9de control plane</a>
+  <a data-nav href="user.html">User guide</a>
+  <a data-nav href="admin.html">Admin guide</a>
+</div>
+<div class="group">
+  <div class="gtitle">Architecture</div>
+  <a data-nav href="shell.html">Shell contract</a>
+  <a data-nav href="surfaces.html">Surfaces</a>
+  <a data-nav href="rows.html">Rows</a>
+  <a data-nav href="declarative.html">Declarative UI</a>
+  <a data-nav href="appearance.html">Appearance &amp; style</a>
+  <a data-nav href="runtime.html">Runtime & events</a>
+  <a data-nav href="realtime.html">Realtime & animation</a>
+  <a data-nav href="scheduler.html">Scheduler</a>
+  <a data-nav href="services.html">Services & UI</a>
+</div>
+<div class="group">
+  <div class="gtitle">Components</div>
+  <a data-nav href="control.html">Control Center</a>
+  <a data-nav href="panel.html">9de-panel</a>
+  <a data-nav href="dash.html">9de-dash</a>
+  <a data-nav href="desktop.html">9de-desktop (Finder)</a>
+  <a data-nav href="settings.html">9de-settings</a>
+</div>
+<div class="group">
+  <div class="gtitle">Deep dive</div>
+  <a data-nav href="codewalk.html">Code walkthrough</a>
+  <a data-nav href="contracts.html">Contracts & invariants</a>
+  <a data-nav href="ipc.html">IPC & 9P services</a>
+  <a data-nav href="panel_api.html">Panel module API</a>
+  <a data-nav href="lib9deui_ref.html">lib9deui reference</a>
+  <a data-nav href="perf.html">Performance rules</a>
+  <a data-nav href="faq.html">FAQ</a>
+</div>
+<div class="group">
+  <div class="gtitle">Ops</div>
+  <a data-nav href="config.html">Configuration</a>
+  <a data-nav href="logging.html">Logging</a>
+  <a data-nav href="dev.html">Development workflow</a>
+  <a data-nav href="examples.html">Examples</a>
+  <a data-nav href="libraries.html">Libraries</a>
+  <a data-nav href="lib9deui.html">lib9deui</a>
+  <a data-nav href="lib9deui_components.html">UI components</a>
+  <a data-nav href="lib9deui_runtime.html">UI runtime API</a>
+  <a data-nav href="lib9deui_async.html">Async & services</a>
+</div>
+    </aside>
+
+    <main class="content">
+      <h2>UI components</h2>
+<p class="muted">
+This is the component catalog for 9DE apps. Components are <b>structural</b>:
+they’re built out of surfaces, rows, and predictable layout primitives.
+</p>
+
+<h3>Foundations</h3>
+<ul>
+  <li><b>Surface</b>: background + border + padding.</li>
+  <li><b>Hairline</b>: separators (1px).</li>
+  <li><b>Row</b>: fixed height, label left, control right.</li>
+</ul>
+
+<h3>Inputs</h3>
+<div class="kv">
+  <div><code>Button</code></div><div>Clickable action, optional icon, disabled state.</div>
+  <div><code>Toggle</code></div><div>On/off. Used in Settings and service actions.</div>
+  <div><code>Slider</code></div><div>Numeric range. Commit on mouse-up (avoid redraw storms).</div>
+  <div><code>Select</code></div><div>Dropdown/list selection.</div>
+  <div><code>TextField</code></div><div>Single-line input with focus ring.</div>
+</div>
+
+<h3>Feedback</h3>
+<div class="kv">
+  <div><code>Spinner</code></div><div>Unknown duration operations.</div>
+  <div><code>ProgressBar</code></div><div>Known work units (0..1 or 0..N).</div>
+  <div><code>Badge</code></div><div>Status pill: ok/degraded/down; cheap to render.</div>
+  <div><code>Toast</code></div><div>Transient notification, auto-dismiss, rate-limited.</div>
+  <div><code>Skeleton</code></div><div>Placeholder layout while loading.</div>
+</div>
+
+<h3>Lists (heavy load)</h3>
+<div class="callout">
+  Lists are where desktops die. v1 requires <b>virtualized lists</b>:
+  only measure/layout/draw rows that are visible.
+</div>
+<pre><code>// planned list API sketch
+UiNode *uiVList(UiListModel *m);
+struct UiListModel{
+  int (*count)(void*);
+  void (*row)(void*, int i, UiRowBuild *out);  // build row i
+};</code></pre>
+
+<h3>Service rows (pattern)</h3>
+<pre><code>[Badge ok]  audio · running
+(right) [Logs] [Restart]</code></pre>
+
+<h3>Loading states (pattern)</h3>
+<ul>
+  <li>Disable the action button, not the whole page.</li>
+  <li>Keep layout stable: swap text for skeleton bars.</li>
+  <li>Show progress in the list row where the action happens.</li>
+</ul>
+
+<p>See: <a href="realtime.html">Realtime & animation</a>.</p>
+
+      <div class="footer">9DE documentation — 2025-12-27.</div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

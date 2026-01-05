@@ -1,0 +1,22 @@
+LIB=lib9deui.a
+CFLAGS=-I../include
+
+OFILES=\
+	ui.$O \
+	theme.$O \
+	prim.$O \
+	util.$O \
+	sched.$O \
+	frame.$O \
+	icon.$O \
+	layout.$O \
+	widgets/button.$O \
+	widgets/toggle.$O \
+	widgets/slider.$O \
+	widgets/segment.$O \
+	widgets/textfield.$O \
+	widgets/list.$O \
+	widgets/progress.$O \
+	widgets/dropdown.$O \
+
+</sys/src/cmd/mklib

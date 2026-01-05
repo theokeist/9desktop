@@ -1,0 +1,6 @@
+#!/bin/rc
+# quick smoke test for 9de-panel
+mkdir -p $home/lib/9de/log
+window 0,0,9999,34 rc -c '9de-panel >$home/lib/9de/log/9de-panel.log >[2]$home/lib/9de/log/9de-panel.err'
+echo 'panel started; tailing err...'
+tail -f $home/lib/9de/log/9de-panel.err

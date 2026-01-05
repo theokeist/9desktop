@@ -1,0 +1,6 @@
+TARG=ui9demo
+CFLAGS=-I../../include
+OFILES=main.$O
+LIBS=../../lib/lib9deui.a -ldraw -levent
+
+</sys/src/cmd/mkone

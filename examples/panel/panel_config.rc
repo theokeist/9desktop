@@ -1,0 +1,38 @@
+# 9de-panel v6 config example
+# File: $home/lib/9de/config.rc
+
+panel_left="menu ws"
+panel_right="preset de net clock notif"
+
+# sizes
+panel_height=34
+panel_minih=28
+
+# density / feel
+panel_pad=7
+panel_gap=6
+panel_chip=1
+panel_ws_maxw=380
+panel_win_maxw=240
+
+# appearance (preset-based)
+ui_style=terminal   # terminal | dark | glass
+# ui_alpha=185
+# ui_accent=#3c82ff
+# ui_topbg=#121212
+# ui_toptext=#e6e6e6
+# ui_border_alpha=120
+# ui_shadow_alpha=60
+# ui_radius=4
+# ui_font=/lib/font/bit/lucsans/euro.8.font
+
+# gradients
+ui_topgrad=1
+ui_minigrad=1
+# ui_topgrad0=#0c0c0e
+# ui_topgrad1=#1a1a20
+# ui_minigrad0=#ffffff
+# ui_minigrad1=#f3f3f3
+
+# panel_watch=0   # disable /srv/9de watcher
+# panel_ascii=1   # ASCII-only symbols

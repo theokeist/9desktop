@@ -1,0 +1,39 @@
+:root{
+  --bg:#ffffff;
+  --paper:#ffffff;
+  --line:#d6d6d6;
+  --text:#1a1a1a;
+  --muted:#6e6e6e;
+  --accent:#2f6fff;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "DejaVu Sans Mono", monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "DejaVu Sans", Arial, sans-serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.6}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.header{background:var(--paper);border-bottom:1px solid var(--line)}
+.header .wrap{max-width:1100px;margin:0 auto;padding:14px 16px;display:flex;align-items:baseline;gap:12px}
+.header .title{font-weight:700;font-size:16px}
+.header .meta{font-size:13px;color:var(--muted)}
+.layout{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:240px 1fr;gap:16px;padding:16px}
+.sidebar{position:sticky;top:16px;align-self:start;background:var(--paper);border:1px solid var(--line);padding:8px 0}
+.sidebar .group{padding:8px 0;border-top:1px solid #eee}
+.sidebar .group:first-child{border-top:0}
+.sidebar .gtitle{font-family:var(--mono);font-size:12px;color:var(--muted);padding:0 12px 6px 12px;text-transform:uppercase;letter-spacing:.02em}
+.sidebar a{display:block;padding:6px 12px;font-size:14px}
+.sidebar a.active{font-weight:600;border-left:3px solid var(--accent);padding-left:9px}
+.content{background:var(--paper);border:0;padding:18px 18px 22px 18px}
+h2{margin:8px 0;font-size:20px}
+h3{margin:18px 0 6px;font-size:16px}
+p{margin:8px 0}
+.muted{color:var(--muted)}
+pre{background:#ffffff;border:1px solid var(--line);padding:12px;overflow:auto;font-family:var(--mono);font-size:12.5px;line-height:1.5}
+code{font-family:var(--mono);font-size:.95em}
+hr{border:0;border-top:1px solid var(--line);margin:18px 0}
+.kv{display:grid;grid-template-columns:240px 1fr;gap:10px;margin:10px 0}
+.kv div{padding:6px 0;border-bottom:1px solid #eee}
+.badge{display:inline-block;font-family:var(--mono);font-size:12px;padding:2px 8px;border:1px solid var(--line);background:#fafafa;color:#222}
+.callout{border-left:3px solid var(--accent);background:#f7f9ff;padding:10px 12px;margin:12px 0}
+.footer{margin-top:18px;color:var(--muted);font-size:13px}

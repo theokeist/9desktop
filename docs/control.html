@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>9DE docs — Control Center</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="header">
+    <div class="wrap">
+      <div class="title">9DE docs</div>
+      <div class="meta">desktop-only · shell contract · declarative UI</div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <aside class="sidebar" role="navigation" aria-label="Documentation navigation">
+      <!-- sidebar injected by build step (static in repo) -->
+      <div class="group">
+        <div class="gtitle">Overview</div>
+        <a data-nav href="index.html">Getting started</a>
+        <a data-nav href="naming.html">Naming & entrypoints</a>
+        <a data-nav href="roadmap.html">Roadmap</a>
+      </div>
+      <div class="group">
+        <div class="gtitle">System</div>
+        <a data-nav href="system.html">9front + 9DE integration</a>
+        <a data-nav href="srv9de.html">/srv/9de control plane</a>
+        <a data-nav href="user.html">User guide</a>
+        <a data-nav href="admin.html">Admin guide</a>
+      </div>
+      <div class="group">
+        <div class="gtitle">Architecture</div>
+        <a data-nav href="shell.html">Shell contract</a>
+        <a data-nav href="surfaces.html">Surfaces</a>
+        <a data-nav href="rows.html">Rows</a>
+        <a data-nav href="declarative.html">Declarative UI</a>
+        <a data-nav href="appearance.html">Appearance &amp; style</a>
+        <a data-nav href="runtime.html">Runtime & events</a>
+        <a data-nav href="realtime.html">Realtime & animation</a>
+        <a data-nav href="scheduler.html">Scheduler</a>
+        <a data-nav href="services.html">Services & UI</a>
+      </div>
+      <div class="group">
+        <div class="gtitle">Components</div>
+        <a data-nav href="control.html">Control Center</a>
+        <a data-nav href="panel.html">9de-panel</a>
+        <a data-nav href="dash.html">9de-dash</a>
+        <a data-nav href="ui9demo.html">ui9demo</a>
+      </div>
+      <div class="group">
+        <div class="gtitle">Deep dive</div>
+        <a data-nav href="codewalk.html">Code walkthrough</a>
+        <a data-nav href="contracts.html">Contracts & invariants</a>
+        <a data-nav href="ipc.html">IPC & 9P services</a>
+        <a data-nav href="panel_api.html">Panel module API</a>
+        <a data-nav href="lib9deui_ref.html">lib9deui reference</a>
+        <a data-nav href="perf.html">Performance rules</a>
+        <a data-nav href="faq.html">FAQ</a>
+      </div>
+    </aside>
+
+    <main class="content">
+      <h1>Control Center (OS-first)</h1>
+      <p><b>Goal:</b> change real system behavior first. No “theme playground” nonsense.</p>
+
+      <h2>What it edits</h2>
+      <p><code>9de-control</code> edits <code>$home/lib/9de/config.rc</code> (name=value only):</p>
+      <pre><code>start_shell=1|0
+start_demo=1|0
+session_mode=normal|test|dev
+test_layout=laptop|ultrawide
+
+panel_left="menu ws"
+panel_right="preset de net clock notif"
+
+ui_style=terminal|dark|glass
+ui_alpha=0..255
+ui_radius=0..24
+
+ui_topgrad=1|0
+ui_topgrad0=#rrggbb
+ui_topgrad1=#rrggbb
+ui_minigrad=1|0
+ui_minigrad0=#rrggbb
+ui_minigrad1=#rrggbb
+</code></pre>
+
+      <h2>What happens on Apply</h2>
+      <ol>
+        <li>Updates <code>config.rc</code> (creates <code>config.rc.bak</code>).</li>
+        <li>Runs <code>9de-session gen</code> (best-effort).</li>
+        <li>Sends <code>reload</code> to <code>/srv/9de</code> via <code>9de ctl reload</code>.</li>
+      </ol>
+
+      <h2>Live panel reload</h2>
+      <p><code>9de-panel</code> listens to <code>/mnt/9de/events</code>. When it sees <code>ok reload</code>, it:</p>
+      <ul>
+        <li>Reloads config</li>
+        <li>Rebuilds module order</li>
+        <li>Re-applies appearance tokens (style/alpha/radius/gradients)</li>
+      </ul>
+
+      <h2>Build + run</h2>
+      <pre><code>cd $home/src/9de
+mk
+# run from a window:
+9de control
+# or directly:
+9de-control
+</code></pre>
+
+      <h2>Logs</h2>
+      <p>When launched via <code>9de control</code>:</p>
+      <ul>
+        <li><code>$home/lib/9de/log/9de-control.log</code></li>
+        <li><code>$home/lib/9de/log/9de-control.err</code></li>
+      </ul>
+    </main>
+  </div>
+
+  <script>
+    // highlight active nav
+    const here = location.pathname.split('/').pop();
+    document.querySelectorAll('[data-nav]').forEach(a=>{
+      if(a.getAttribute('href') === here) a.classList.add('active');
+    });
+  </script>
+</body>
+</html>

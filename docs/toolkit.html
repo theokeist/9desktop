@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>9DE Toolkit additions</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Toolkit additions</h1>
+    <p class="muted">Minimal, OS-first primitives: layout, icons, focus helpers.</p>
+    <p><a href="index.html">← Docs index</a></p>
+  </header>
+
+  <main>
+    <h2>Layout: Ui9Flex</h2>
+    <pre><code>Ui9Flex fx;
+ui9flex_init(&fx, r, Ui9FlexRow, 8, 12);
+left = ui9flex_fixed(&fx, 220);
+mid  = ui9flex_grow(&fx, 1, 300);
+right= ui9flex_fixed(&fx, 140);
+ui9flex_layout(&fx);
+
+drawnav(ui9flex_rect(&fx, left));
+drawcontent(ui9flex_rect(&fx, mid));
+drawtools(ui9flex_rect(&fx, right));
+
+ui9flex_free(&fx);</code></pre>
+
+    <h2>Icons</h2>
+    <p>Apps should not ship ad-hoc icon paths. Use the lookup contract:</p>
+    <pre><code>Image *ic = ui9icon_any(&ui, "acme");
+if(ic) draw(screen, r, ic, nil, ZP);</code></pre>
+
+    <h2>Focus / capture</h2>
+    <pre><code>ulong id = ui9_idstr("control:radius");
+if(clicked) ui9_setfocus(&ui, id);
+ui9_textfield_draw(&ui, r, buf, nbuf, ui9_isfocus(&ui, id), "radius");</code></pre>
+  </main>
+</div>
+</body>
+</html>

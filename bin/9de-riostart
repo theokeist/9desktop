@@ -1,0 +1,61 @@
+#!/bin/rc
+# 9de-riostart v2: supports session modes (normal/test/dev)
+#
+# Modes:
+#   normal: 9de start
+#   test:   9de start + debug/watch windows (ui9demo + tails + /srv events)
+#   dev:    test + repo shell workbench window
+#
+# Choose mode:
+#   - set session_mode=normal|test|dev in $home/lib/9de/config.rc
+#   - or pass: 9de-riostart -test | -dev | -normal
+
+9dehome=$home/lib/9de
+mkdir -p $9dehome
+
+# Make sure session files exist (best-effort)
+if(! test -e $9dehome/defaults.rc || ! test -e $9dehome/config.rc || ! test -e $9dehome/autostart.rc){
+    if(which 9de-session >/dev/null 2>&1){
+        9de-session init
+        9de-session gen
+    }
+}
+
+# Load defaults/config so session_mode is available
+if(test -e $9dehome/defaults.rc) . $9dehome/defaults.rc
+if(test -e $9dehome/config.rc)   . $9dehome/config.rc
+
+mode=normal
+if(! ~ $session_mode '') mode=$session_mode
+
+switch($1){
+case -test
+    mode=test
+case -dev
+    mode=dev
+case -normal
+    mode=normal
+case ''
+    # no override
+case *
+    # unknown flag; ignore
+}
+
+if(! which 9de >/dev/null 2>&1){
+    # fallback: nothing else to do
+    exits ''
+}
+
+switch($mode){
+case test
+    # run like normal, but turn on debug surfaces & watchers
+    start_demo=1
+    9de start
+    9de testtools
+case dev
+    start_demo=1
+    9de start
+    9de devtools
+case *
+    9de start
+}

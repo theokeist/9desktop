@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>9DE docs — Appearance & style</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="header">
+    <div class="wrap">
+      <div class="title">9DE docs</div>
+      <div class="meta">desktop-only · shell contract · declarative UI</div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <aside class="sidebar" role="navigation" aria-label="Documentation navigation">
+      <div class="group">
+  <div class="gtitle">Overview</div>
+  <a data-nav href="index.html">Getting started</a>
+  <a data-nav href="naming.html">Naming & entrypoints</a>
+  <a data-nav href="roadmap.html">Roadmap</a>
+</div>
+<div class="group">
+  <div class="gtitle">System</div>
+  <a data-nav href="system.html">9front + 9DE integration</a>
+  <a data-nav href="srv9de.html">/srv/9de control plane</a>
+  <a data-nav href="user.html">User guide</a>
+  <a data-nav href="admin.html">Admin guide</a>
+</div>
+<div class="group">
+  <div class="gtitle">Architecture</div>
+  <a data-nav href="shell.html">Shell contract</a>
+  <a data-nav href="surfaces.html">Surfaces</a>
+  <a data-nav href="rows.html">Rows</a>
+  <a data-nav href="declarative.html">Declarative UI</a>
+  <a data-nav href="appearance.html">Appearance &amp; style</a>
+  <a data-nav href="runtime.html">Runtime & events</a>
+  <a data-nav href="realtime.html">Realtime & animation</a>
+  <a data-nav href="scheduler.html">Scheduler</a>
+  <a data-nav href="services.html">Services & UI</a>
+</div>
+<div class="group">
+  <div class="gtitle">Components</div>
+  <a data-nav href="control.html">Control Center</a>
+  <a data-nav href="panel.html">9de-panel</a>
+  <a data-nav href="dash.html">9de-dash</a>
+  <a data-nav href="desktop.html">9de-desktop (Finder)</a>
+  <a data-nav href="settings.html">9de-settings</a>
+</div>
+<div class="group">
+  <div class="gtitle">Deep dive</div>
+  <a data-nav href="codewalk.html">Code walkthrough</a>
+  <a data-nav href="contracts.html">Contracts & invariants</a>
+  <a data-nav href="ipc.html">IPC & 9P services</a>
+  <a data-nav href="panel_api.html">Panel module API</a>
+  <a data-nav href="lib9deui_ref.html">lib9deui reference</a>
+  <a data-nav href="perf.html">Performance rules</a>
+  <a data-nav href="faq.html">FAQ</a>
+</div>
+<div class="group">
+  <div class="gtitle">Ops</div>
+  <a data-nav href="config.html">Configuration</a>
+  <a data-nav href="logging.html">Logging</a>
+  <a data-nav href="dev.html">Development workflow</a>
+  <a data-nav href="examples.html">Examples</a>
+  <a data-nav href="libraries.html">Libraries</a>
+  <a data-nav href="lib9deui.html">lib9deui</a>
+  <a data-nav href="lib9deui_components.html">UI components</a>
+  <a data-nav href="lib9deui_runtime.html">UI runtime API</a>
+  <a data-nav href="lib9deui_async.html">Async & services</a>
+</div>
+
+    </aside>
+
+    <main class="content">
+      <h2>Configuration</h2>
+<p class="muted">rc-friendly key=value. Keep it scriptable.</p>
+
+<div class="kv">
+  <div><code>start_shell</code></div><div>Start the shell (1/0).</div>
+  <div><code>start_demo</code></div><div>Start ui9demo (1/0).</div>
+  <div><code>ui_style</code></div><div>terminal | dark | glass</div>
+  <div><code>ui_alpha</code></div><div>0..255</div>
+  <div><code>panel_placement</code></div><div>top/bottom/left</div>
+  <div><code>panel_modules</code></div><div>comma-separated module names</div>
+</div>
+
+<pre><code>9de-session gen</code></pre>
+
+      
+<h2>Gradients (panel surfaces)</h2>
+<p>Gradients are subtle and controlled. They’re off by nature in many DEs because they spiral into theming mess.
+In 9DE they’re a <em>token</em>: you can enable/disable and override endpoints.</p>
+
+<div class="grid2">
+  <div><code>ui_topgrad</code></div><div>1/0 (default 1)</div>
+  <div><code>ui_topgrad0</code></div><div>#RRGGBB (optional)</div>
+  <div><code>ui_topgrad1</code></div><div>#RRGGBB (optional)</div>
+  <div><code>ui_minigrad</code></div><div>1/0 (default 1)</div>
+  <div><code>ui_minigrad0</code></div><div>#RRGGBB (optional)</div>
+  <div><code>ui_minigrad1</code></div><div>#RRGGBB (optional)</div>
+</div>
+
+<pre><code># subtle topbar gradient (default)
+ui_topgrad=1
+
+# override endpoints (example)
+# ui_topgrad0=#0c0c0e
+# ui_topgrad1=#1a1a20
+
+# mini list bar gradient
+ui_minigrad=1
+</code></pre>
+
+<div class="footer">9DE documentation — 2025-12-27.</div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

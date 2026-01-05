@@ -1,0 +1,4 @@
+TARG=9de-session
+OFILES=main.$O
+
+</sys/src/cmd/mkone

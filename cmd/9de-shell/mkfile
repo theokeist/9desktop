@@ -1,0 +1,6 @@
+TARG=9de-shell
+OFILES=main.$O srv9p.$O
+
+LIBS=-l9p -lthread
+
+</sys/src/cmd/mkone

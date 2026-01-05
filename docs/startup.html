@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>9DE docs — Start on login</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="topbar">
+    <div class="wrap brand">
+      <h1>9DE docs</h1>
+      <div class="meta">simple · readable · project-local</div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <aside class="sidebar" role="navigation" aria-label="Documentation navigation">
+      
+    <div class="group">
+  <div class="gtitle">Overview</div>
+  <a data-nav href="index.html">Getting started</a>
+  <a data-nav href="naming.html">Naming & entrypoints</a>
+  <a data-nav href="roadmap.html">Roadmap</a>
+</div>
+<div class="group">
+  <div class="gtitle">System</div>
+  <a data-nav href="system.html">9front + 9DE integration</a>
+  <a data-nav href="srv9de.html">/srv/9de control plane</a>
+  <a data-nav href="user.html">User guide</a>
+  <a data-nav href="admin.html">Admin guide</a>
+</div>
+<div class="group">
+  <div class="gtitle">Architecture</div>
+  <a data-nav href="shell.html">Shell contract</a>
+  <a data-nav href="surfaces.html">Surfaces</a>
+  <a data-nav href="rows.html">Rows</a>
+  <a data-nav href="declarative.html">Declarative UI</a>
+  <a data-nav href="appearance.html">Appearance &amp; style</a>
+  <a data-nav href="runtime.html">Runtime & events</a>
+  <a data-nav href="realtime.html">Realtime & animation</a>
+  <a data-nav href="scheduler.html">Scheduler</a>
+  <a data-nav href="services.html">Services & UI</a>
+</div>
+<div class="group">
+  <div class="gtitle">Components</div>
+  <a data-nav href="control.html">Control Center</a>
+  <a data-nav href="panel.html">9de-panel</a>
+  <a data-nav href="dash.html">9de-dash</a>
+  <a data-nav href="desktop.html">9de-desktop (Finder)</a>
+  <a data-nav href="settings.html">9de-settings</a>
+</div>
+<div class="group">
+  <div class="gtitle">Deep dive</div>
+  <a data-nav href="codewalk.html">Code walkthrough</a>
+  <a data-nav href="contracts.html">Contracts & invariants</a>
+  <a data-nav href="ipc.html">IPC & 9P services</a>
+  <a data-nav href="panel_api.html">Panel module API</a>
+  <a data-nav href="lib9deui_ref.html">lib9deui reference</a>
+  <a data-nav href="perf.html">Performance rules</a>
+  <a data-nav href="faq.html">FAQ</a>
+</div>
+<div class="group">
+  <div class="gtitle">Ops</div>
+  <a data-nav href="config.html">Configuration</a>
+  <a data-nav href="logging.html">Logging</a>
+  <a data-nav href="dev.html">Development workflow</a>
+  <a data-nav href="examples.html">Examples</a>
+  <a data-nav href="libraries.html">Libraries</a>
+  <a data-nav href="lib9deui.html">lib9deui</a>
+  <a data-nav href="lib9deui_components.html">UI components</a>
+  <a data-nav href="lib9deui_runtime.html">UI runtime API</a>
+  <a data-nav href="lib9deui_async.html">Async & services</a>
+</div>
+
+    </aside>
+
+    <main class="content">
+      <div class="card">
+  <h2>Start 9DE on login</h2>
+  <p class="muted">
+    The safe pattern is: keep a single stable entry script and tell rio to run it at startup.
+    The Control Center can then change what starts by rewriting small config files, not by patching big scripts constantly.
+  </p>
+</div>
+
+<section id="recommended" class="card">
+  <h2>Recommended chain</h2>
+  <div class="kv">
+    <div>Login</div><div><code>$home/lib/profile</code> (user session init)</div>
+    <div>Start rio</div><div><code>exec rio -i 9de-riostart</code></div>
+    <div>9DE entry</div><div><code>$home/bin/rc/9de-riostart</code></div>
+    <div>Config</div><div><code>$home/lib/9de/config.rc</code> + <code>autostart.rc</code></div>
+  </div>
+</section>
+
+<section id="profile-edit" class="card">
+  <h2>Minimal profile change</h2>
+  <p>In the <code>terminal</code> case of <code>$home/lib/profile</code>, replace:</p>
+  <pre><code>exec rio</code></pre>
+  <p>with:</p>
+  <pre><code>exec rio -i 9de-riostart</code></pre>
+
+  <div class="callout">
+    Control Center should always: (1) make a dated backup, (2) patch only the terminal-case <code>exec rio</code>, (3) offer a “revert” button.
+  </div>
+</section>
+
+<section id="test-without-install" class="card">
+  <h2>Test without installing</h2>
+  <p>Before touching profile, you can test directly:</p>
+  <pre><code>rio -i $home/bin/rc/9de-riostart</code></pre>
+</section>
+
+<section id="riostart-script" class="card">
+  <h2>9DE entry script: <code>9de-riostart</code></h2>
+  <p>Keep this script stable. It loads defaults, then user config, then runs generated autostart.</p>
+  <pre><code>#!/bin/rc
+9dehome=$home/lib/9de
+if(! test -d $9dehome) mkdir -p $9dehome
+
+if(test -e $9dehome/defaults.rc) . $9dehome/defaults.rc
+if(test -e $9dehome/config.rc)    . $9dehome/config.rc
+
+if(test -e $9dehome/autostart.rc) . $9dehome/autostart.rc</code></pre>
+</section>
+
+<section id="logs" class="card">
+  <h2>Logs</h2>
+  <p>
+    Autostart launches each component with separate streams:
+    <code>.log</code> (stdout) and <code>.err</code> (stderr).
+  </p>
+  <pre><code>$logdir/9de-panel.log
+$logdir/9de-panel.err
+$logdir/ui9demo.log
+$logdir/ui9demo.err</code></pre>
+  <div class="callout">
+    If something “does nothing”, check the <code>.err</code> first — that’s where sysfatal output ends up.
+  </div>
+</section>
+
+      <div class="footer">9DE documentation.</div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

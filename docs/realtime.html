@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>9DE docs — Realtime & animation</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="header">
+    <div class="wrap">
+      <div class="title">9DE docs</div>
+      <div class="meta">desktop-only · shell contract · declarative UI</div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <aside class="sidebar" role="navigation" aria-label="Documentation navigation">
+      <div class="group">
+  <div class="gtitle">Overview</div>
+  <a data-nav href="index.html">Getting started</a>
+  <a data-nav href="naming.html">Naming & entrypoints</a>
+  <a data-nav href="roadmap.html">Roadmap</a>
+</div>
+<div class="group">
+  <div class="gtitle">System</div>
+  <a data-nav href="system.html">9front + 9DE integration</a>
+  <a data-nav href="srv9de.html">/srv/9de control plane</a>
+  <a data-nav href="user.html">User guide</a>
+  <a data-nav href="admin.html">Admin guide</a>
+</div>
+<div class="group">
+  <div class="gtitle">Architecture</div>
+  <a data-nav href="shell.html">Shell contract</a>
+  <a data-nav href="surfaces.html">Surfaces</a>
+  <a data-nav href="rows.html">Rows</a>
+  <a data-nav href="declarative.html">Declarative UI</a>
+  <a data-nav href="appearance.html">Appearance &amp; style</a>
+  <a data-nav href="runtime.html">Runtime & events</a>
+  <a data-nav href="realtime.html">Realtime & animation</a>
+  <a data-nav href="scheduler.html">Scheduler</a>
+  <a data-nav href="services.html">Services & UI</a>
+</div>
+<div class="group">
+  <div class="gtitle">Components</div>
+  <a data-nav href="control.html">Control Center</a>
+  <a data-nav href="panel.html">9de-panel</a>
+  <a data-nav href="dash.html">9de-dash</a>
+  <a data-nav href="desktop.html">9de-desktop (Finder)</a>
+  <a data-nav href="settings.html">9de-settings</a>
+</div>
+<div class="group">
+  <div class="gtitle">Deep dive</div>
+  <a data-nav href="codewalk.html">Code walkthrough</a>
+  <a data-nav href="contracts.html">Contracts & invariants</a>
+  <a data-nav href="ipc.html">IPC & 9P services</a>
+  <a data-nav href="panel_api.html">Panel module API</a>
+  <a data-nav href="lib9deui_ref.html">lib9deui reference</a>
+  <a data-nav href="perf.html">Performance rules</a>
+  <a data-nav href="faq.html">FAQ</a>
+</div>
+<div class="group">
+  <div class="gtitle">Ops</div>
+  <a data-nav href="config.html">Configuration</a>
+  <a data-nav href="logging.html">Logging</a>
+  <a data-nav href="dev.html">Development workflow</a>
+  <a data-nav href="examples.html">Examples</a>
+  <a data-nav href="libraries.html">Libraries</a>
+  <a data-nav href="lib9deui.html">lib9deui</a>
+  <a data-nav href="lib9deui_components.html">UI components</a>
+  <a data-nav href="lib9deui_runtime.html">UI runtime API</a>
+  <a data-nav href="lib9deui_async.html">Async & services</a>
+</div>
+    </aside>
+
+    <main class="content">
+      <h2>Realtime & animation</h2>
+<p class="muted">
+“Realtime” in 9DE means: predictable responsiveness under load, not a 60fps demo.
+Animations are allowed, but they are <b>budgeted</b> and <b>cancelable</b>.
+</p>
+
+<h3>Event sources</h3>
+<ul>
+  <li><b>Input:</b> mouse/keyboard events via <code>libevent</code> (<code>einit</code>, <code>event</code>).</li>
+  <li><b>Timers:</b> a small scheduler that triggers at a fixed tick (e.g. 16–50ms depending on needs).</li>
+  <li><b>Background work:</b> workers send messages back to the UI thread (planned: libthread channels or a pipe).</li>
+  <li><b>Services:</b> state changes stream in from <code>/srv/9de</code> (<code>events</code> file) (planned).</li>
+</ul>
+
+<h3>UI thread rule</h3>
+<div class="callout">
+  Do not block the UI thread. Anything that might take longer than a few milliseconds goes to a worker,
+  and the UI gets a state update (progress/result) via a message.
+</div>
+
+<h3>Animation budget</h3>
+<ul>
+  <li>Default tick: <b>20–30 fps</b> for spinners/toasts is enough.</li>
+  <li>Only animate when visible.</li>
+  <li>Prefer “stepped” animation (frame index) over expensive geometry.</li>
+  <li>Coalesce redraws: if 5 things invalidate during a tick, redraw once.</li>
+</ul>
+
+<h3>Loading patterns</h3>
+<p>Use the right pattern for the cost:</p>
+<ul>
+  <li><b>Spinner</b>: unknown duration, short operations.</li>
+  <li><b>Progress bar</b>: known work units, longer operations.</li>
+  <li><b>Skeleton rows</b>: content layout is known, data is loading (best perceived performance).</li>
+  <li><b>Inline “busy” badge</b>: lists of services/jobs; avoids full-screen blocking.</li>
+</ul>
+
+<h3>Example: spinner component</h3>
+<pre><code>// pseudo: a spinner is just a stateful widget with a phase
+typedef struct UiSpinner UiSpinner;
+struct UiSpinner{
+  int phase;    // 0..11
+  int running;  // 1/0
+};
+
+void spinnertick(UiSpinner *s){
+  if(!s-&gt;running) return;
+  s-&gt;phase = (s-&gt;phase + 1) % 12;
+  uiInvalidate(s);   // mark dirty; next tick redraws
+}</code></pre>
+
+<h3>Example: skeleton rows</h3>
+<pre><code>// draw “Surface” + a few muted bars instead of text
+// cheap rectangles; no blur, no gradients
+uiDrawSurface(r);
+uiDrawBar(r, 12, 10, 240, 10); // title bar
+uiDrawBar(r, 12, 28, 320, 10); // subtitle bar</code></pre>
+
+<h3>Example: service state stream</h3>
+<pre><code># planned
+# read /mnt/9de/events:
+service net ok
+service audio degraded
+job pkgupdate running 42%</code></pre>
+
+      <div class="footer">9DE documentation — 2025-12-27.</div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

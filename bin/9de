@@ -1,0 +1,170 @@
+#!/bin/rc
+fn die { echo $1 >[1=2]; exits $1 }
+fn ensurehome {
+    9dehome=$home/lib/9de
+    mkdir -p $9dehome
+    if(! test -e $9dehome/defaults.rc || ! test -e $9dehome/config.rc){
+        if(which 9de-session >/dev/null 2>&1){
+            9de-session init
+        }
+    }
+}
+fn ensureauto {
+    9dehome=$home/lib/9de
+    if(! test -e $9dehome/autostart.rc){
+        if(which 9de-session >/dev/null 2>&1){
+            9de-session gen
+        }
+    }
+}
+fn mountsrv {
+    if(! test -e /srv/9de) die '9de: /srv/9de not present (is 9de-shell running?)'
+    if(! test -d /mnt/9de) mkdir -p /mnt/9de
+    if(! test -e /mnt/9de/ctl){
+        mount -c /srv/9de /mnt/9de
+    }
+}
+
+cmd=$1
+if(~ $cmd '') cmd start
+
+switch($cmd){
+case help -h --help
+    echo 'usage: 9de [start|devstart|init|gen|print|ctl|status|events|logs]'
+    echo '  start     start session using $home/lib/9de/autostart.rc'
+    echo '  devstart  run in-tree dev start (./bin/9de-start.rc)'
+    echo '  init      create defaults/config'
+    echo '  gen       generate autostart.rc from config'
+    echo '  print     show current defaults/config/autostart'
+    echo '  ctl ...   write a control command to /mnt/9de/ctl (auto-mounts)'
+    echo '  status    show /mnt/9de/status'
+    echo '  events    follow /mnt/9de/events'
+    echo '  logs      list log locations (or: logs tail <name>)'
+    echo '  testtools open debug/watch windows (ui9demo + tails + /srv events)'
+    echo '           config: test_layout=laptop|ultrawide (default laptop)'
+    echo '  devtools  open dev workbench windows (repo shell + testtools)'
+    exits ''
+case init gen print
+    if(! which 9de-session >/dev/null 2>&1) die '9de: 9de-session not in PATH'
+    9de-session $cmd
+    exits ''
+case devstart
+    if(test -e ./bin/9de-start.rc){
+        ./bin/9de-start.rc
+    }{
+        die '9de: devstart requires running from repo root (./bin/9de-start.rc)'
+    }
+case start
+    ensurehome
+    ensureauto
+    if(test -e $home/lib/9de/defaults.rc) . $home/lib/9de/defaults.rc
+    if(test -e $home/lib/9de/config.rc)   . $home/lib/9de/config.rc
+    if(test -e $home/lib/9de/autostart.rc){
+        . $home/lib/9de/autostart.rc
+    }{
+        die '9de: autostart.rc missing; run: 9de gen'
+    }
+case testtools
+    ensurehome
+    if(test -e $home/lib/9de/defaults.rc) . $home/lib/9de/defaults.rc
+    if(test -e $home/lib/9de/config.rc)   . $home/lib/9de/config.rc
+    mkdir -p $home/lib/9de/log
+
+    # layout: laptop (default) or ultrawide
+    if(~ $test_layout '') test_layout=laptop
+
+    # --- geometry presets ---
+    # laptop: stacked windows (main, logs, watcher)
+    # ultrawide: cockpit (main left, logs right, watcher bottom)
+    if(~ $test_layout ultrawide){
+        mainrect='60,60,1400,760'
+        log1rect='1420,60,9999,420'
+        log2rect='1420,430,9999,760'
+        watchrect='60,770,9999,9999'
+    }{
+        mainrect='60,60,1200,560'
+        log1rect='60,570,1200,770'
+        log2rect='60,780,1200,930'
+        watchrect='60,940,1200,9999'
+    }
+
+    # UI components gallery
+    if(which ui9demo >/dev/null 2>&1){
+        window $mainrect rc -c 'ui9demo >$home/lib/9de/log/ui9demo.log >[2]$home/lib/9de/log/ui9demo.err'
+    }
+
+    # log tails
+    window $log1rect rc -c 'echo --- 9de-panel.err ---; tail -f $home/lib/9de/log/9de-panel.err'
+    window $log2rect rc -c 'echo --- 9de-shell.err ---; tail -f $home/lib/9de/log/9de-shell.err'
+
+    # /srv + events watcher
+    window $watchrect rc -c '
+        echo --- /srv/9de + events ---
+        if(test -e /srv/9de){
+            mkdir -p /mnt/9de
+            mount -c /srv/9de /mnt/9de >[2]/dev/null
+            echo; echo srv:;
+            ls -l /srv/9de
+            if(test -e /mnt/9de/status){
+                echo; echo status:;
+                cat /mnt/9de/status
+            }
+            if(test -e /mnt/9de/events){
+                echo; echo events:; echo "(ctrl-c to stop)";
+                cat /mnt/9de/events
+            }{
+                echo "no /mnt/9de/events"
+                for(;;){ sleep 1000 }
+            }
+        }{
+            echo "/srv/9de not present"
+            for(;;){ sleep 1000 }
+        }'
+
+    exits ''
+case devtools
+    ensurehome
+    if(test -e $home/lib/9de/defaults.rc) . $home/lib/9de/defaults.rc
+    if(test -e $home/lib/9de/config.rc)   . $home/lib/9de/config.rc
+    mkdir -p $home/lib/9de/log
+
+    if(~ $test_layout '') test_layout=laptop
+
+    wbrect='60,60,860,520'
+    window $wbrect rc -c 'cd $home/src/9de; echo "9DE workbench: $pwd"; rc'
+    9de testtools
+    exits ''
+case control
+    ensurehome
+    mkdir -p $home/lib/9de/log
+    # open as a normal window, write logs
+    window 120,120,980,820 rc -c '9de-control >$home/lib/9de/log/9de-control.log >[2]$home/lib/9de/log/9de-control.err'
+    exits ''
+case ctl
+    shift
+    if(~ $#* 0) die 'usage: 9de ctl <command...>'
+    mountsrv
+    echo $* > /mnt/9de/ctl
+case status
+    mountsrv
+    cat /mnt/9de/status
+case events
+    mountsrv
+    cat /mnt/9de/events
+case logs
+    sub=$2
+    if(~ $sub '') {
+        echo '$home/lib/9de/log/*.log'
+        echo '$home/lib/9de/log/*.err'
+        exits ''
+    }
+    if(~ $sub tail){
+        name=$3
+        if(~ $name '') die 'usage: 9de logs tail <component>  # e.g. 9de-panel'
+        tail -f $home/lib/9de/log/$name.err
+        exits ''
+    }
+    die 'usage: 9de logs [tail <component>]'
+case *
+    die '9de: unknown command; try: 9de help'
+}

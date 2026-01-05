@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>9DE docs — 9de-panel</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="header">
+    <div class="wrap">
+      <div class="title">9DE docs</div>
+      <div class="meta">desktop-only · shell contract · declarative UI</div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <aside class="sidebar" role="navigation" aria-label="Documentation navigation">
+      <div class="group">
+  <div class="gtitle">Overview</div>
+  <a data-nav href="index.html">Getting started</a>
+  <a data-nav href="naming.html">Naming & entrypoints</a>
+  <a data-nav href="roadmap.html">Roadmap</a>
+</div>
+<div class="group">
+  <div class="gtitle">System</div>
+  <a data-nav href="system.html">9front + 9DE integration</a>
+  <a data-nav href="srv9de.html">/srv/9de control plane</a>
+  <a data-nav href="user.html">User guide</a>
+  <a data-nav href="admin.html">Admin guide</a>
+</div>
+<div class="group">
+  <div class="gtitle">Architecture</div>
+  <a data-nav href="shell.html">Shell contract</a>
+  <a data-nav href="surfaces.html">Surfaces</a>
+  <a data-nav href="rows.html">Rows</a>
+  <a data-nav href="declarative.html">Declarative UI</a>
+  <a data-nav href="appearance.html">Appearance &amp; style</a>
+  <a data-nav href="runtime.html">Runtime & events</a>
+  <a data-nav href="realtime.html">Realtime & animation</a>
+  <a data-nav href="scheduler.html">Scheduler</a>
+  <a data-nav href="services.html">Services & UI</a>
+</div>
+<div class="group">
+  <div class="gtitle">Components</div>
+  <a data-nav href="control.html">Control Center</a>
+  <a data-nav href="panel.html">9de-panel</a>
+  <a data-nav href="dash.html">9de-dash</a>
+  <a data-nav href="desktop.html">9de-desktop (Finder)</a>
+  <a data-nav href="settings.html">9de-settings</a>
+</div>
+<div class="group">
+  <div class="gtitle">Deep dive</div>
+  <a data-nav href="codewalk.html">Code walkthrough</a>
+  <a data-nav href="contracts.html">Contracts & invariants</a>
+  <a data-nav href="ipc.html">IPC & 9P services</a>
+  <a data-nav href="panel_api.html">Panel module API</a>
+  <a data-nav href="lib9deui_ref.html">lib9deui reference</a>
+  <a data-nav href="perf.html">Performance rules</a>
+  <a data-nav href="faq.html">FAQ</a>
+</div>
+<div class="group">
+  <div class="gtitle">Ops</div>
+  <a data-nav href="config.html">Configuration</a>
+  <a data-nav href="logging.html">Logging</a>
+  <a data-nav href="dev.html">Development workflow</a>
+  <a data-nav href="examples.html">Examples</a>
+  <a data-nav href="libraries.html">Libraries</a>
+  <a data-nav href="lib9deui.html">lib9deui</a>
+  <a data-nav href="lib9deui_components.html">UI components</a>
+  <a data-nav href="lib9deui_runtime.html">UI runtime API</a>
+  <a data-nav href="lib9deui_async.html">Async & services</a>
+</div>
+
+    </aside>
+
+    <main class="content">
+      <h2>9de-panel (status bar)</h2>
+        <h3>UI tokens (easy to change later)</h3>
+        <p>These knobs live in <code>$home/lib/9de/config.rc</code>. They let you tune density without recompiling.</p>
+        <ul>
+          <li><code>panel_pad</code>: inner padding (default 7)</li>
+          <li><code>panel_gap</code>: spacing between items (default 6)</li>
+          <li><code>panel_chip</code>: <code>1</code> = calm idle, chips only on hover/press (default). <code>0</code> = always draw button backgrounds.</li>
+          <li><code>panel_ws_maxw</code>: max width of the <code>ws</code> item (default 380)</li>
+          <li><code>panel_win_maxw</code>: max width of each mini entry (default 240)</li>
+        </ul>
+        <pre><code># density knobs
+panel_pad=7
+panel_gap=6
+panel_chip=1
+panel_ws_maxw=380
+panel_win_maxw=240
+</code></pre>
+        <h3>Style rules (lock these down early)</h3>
+        <ul>
+          <li>Idle state should be calm. Highlights appear on hover/press, not permanently.</li>
+          <li>Spacing consistency beats decoration. Use tokens, not per-widget magic numbers.</li>
+          <li>Flat + engineered. No macOS window control cosplay.</li>
+          <li>Keep system paths visible in dev UI while building the shell contract.</li>
+        </ul>
+
+<h3>9de-panel v3 (OS-level)</h3>
+<ul>
+  <li>Module <code>ws</code> reads rio's <code>/dev/wsys</code> to display the current window label.</li>
+  <li>Hover on <code>ws</code> expands the panel height and shows a horizontal mini list of windows; click an entry to focus it (writes <code>current</code> to <code>/dev/wsys/&lt;id&gt;/wctl</code>).</li>
+  <li>Mini list includes system-path hints like <code>/dev/wsys/&lt;id&gt;</code>.</li>
+  <li>Config: <code>panel_minih</code> controls the mini list height.</li>
+</ul>
+
+        <h3>9de-panel v2 ($25)</h3>
+        <ul>
+          <li>Reads <code>$home/lib/9de/config.rc</code> for <code>panel_left</code>, <code>panel_right</code>, <code>panel_height</code>, <code>panel_ascii</code>, <code>panel_watch</code>.</li>
+          <li>Hover/pressed feedback for clickable modules.</li>
+          <li>Modules: <code>menu</code>, <code>preset</code>, <code>de</code>, <code>net</code>, <code>clock</code>, <code>notif</code>.</li>
+          <li>Keyboard: <code>d</code> dash, <code>s</code> status/settings view, <code>l</code> logs, <code>space/enter</code> activates focused menu.</li>
+        </ul>
+        <pre><code># config example
+panel_left="menu"
+panel_right="preset de net clock notif"
+panel_height=34
+panel_watch=1
+panel_ascii=0
+</code></pre>
+
+<p class="muted">
+A single pinned bar window in <b>rio</b>. 9DE is not a window manager; rio is.
+This bar is intentionally “engineered” (fixed layout primitives, not infinite theming).
+</p>
+
+<h3>What works now (v0)</h3>
+<ul>
+  <li><b>Menu button</b> (left): spawns <code>9de-dash</code> in a new window.</li>
+  <li><b>DE state</b> (right): shows <code>de: ok</code> when <code>/srv/9de</code> exists.</li>
+  <li><b>Network</b> (right): best-effort IP from <code>/net/ipifc/&lt;n&gt;/status</code>.</li>
+  <li><b>Clock</b> (right): updates at 1Hz.</li>
+</ul>
+
+<h3>v1 panel (modular)</h3>
+<ul>
+  <li>Config-driven modules via env: <code>panel_left</code>, <code>panel_right</code></li>
+  <li>Offscreen buffer for smoother redraw</li>
+  <li>Optional /srv watcher (reads <code>/mnt/9de/events</code> in a helper proc)</li>
+</ul>
+
+<pre><code># example (rc)
+panel_left="menu"
+panel_right="de net clock"
+9de-panel</code></pre>
+
+
+<h3>Environment</h3>
+<div class="kv">
+  <div><code>panel_netif</code></div><div>Which <code>/net/ipifc</code> index to read (default: <code>0</code>).</div>
+  <div><code>ui_style</code></div><div><code>terminal</code> / <code>dark</code> / <code>glass</code></div>
+  <div><code>ui_alpha</code></div><div>0..255 (used by UI tokens)</div>
+</div>
+
+<h3>Spawning pinned</h3>
+<p>Recommended from shell/session:</p>
+<pre><code>window 0,0,9999,34 rc -c '9de-panel &gt;$home/lib/9de/log/9de-panel.log &gt;[2]$home/lib/9de/log/9de-panel.err'</code></pre>
+
+<h3>Why it stays cheap</h3>
+<ul>
+  <li>Redraw is <b>coalesced</b> (no busy-paint loop).</li>
+  <li>Refresh uses the scheduler (1Hz update + draw budget).</li>
+  <li>No blur, no gradients, no per-frame layout churn.</li>
+</ul>
+
+<h3>Next</h3>
+<ul>
+  <li>Module ordering via config (<code>panel_modules</code>).</li>
+  <li>Workspace center label (via rio win list or a service).</li>
+  <li>Icon symbol table (UTF-8 + ASCII fallback) for consistent glyphs.</li>
+</ul>
+
+
+      <div class="footer">9DE documentation — 2025-12-27.</div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

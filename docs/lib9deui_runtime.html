@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>9DE docs — UI runtime API</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="header">
+    <div class="wrap">
+      <div class="title">9DE docs</div>
+      <div class="meta">desktop-only · shell contract · declarative UI</div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <aside class="sidebar" role="navigation" aria-label="Documentation navigation">
+      <div class="group">
+  <div class="gtitle">Overview</div>
+  <a data-nav href="index.html">Getting started</a>
+  <a data-nav href="naming.html">Naming & entrypoints</a>
+  <a data-nav href="roadmap.html">Roadmap</a>
+</div>
+<div class="group">
+  <div class="gtitle">System</div>
+  <a data-nav href="system.html">9front + 9DE integration</a>
+  <a data-nav href="srv9de.html">/srv/9de control plane</a>
+  <a data-nav href="user.html">User guide</a>
+  <a data-nav href="admin.html">Admin guide</a>
+</div>
+<div class="group">
+  <div class="gtitle">Architecture</div>
+  <a data-nav href="shell.html">Shell contract</a>
+  <a data-nav href="surfaces.html">Surfaces</a>
+  <a data-nav href="rows.html">Rows</a>
+  <a data-nav href="declarative.html">Declarative UI</a>
+  <a data-nav href="appearance.html">Appearance &amp; style</a>
+  <a data-nav href="runtime.html">Runtime & events</a>
+  <a data-nav href="realtime.html">Realtime & animation</a>
+  <a data-nav href="scheduler.html">Scheduler</a>
+  <a data-nav href="services.html">Services & UI</a>
+</div>
+<div class="group">
+  <div class="gtitle">Components</div>
+  <a data-nav href="control.html">Control Center</a>
+  <a data-nav href="panel.html">9de-panel</a>
+  <a data-nav href="dash.html">9de-dash</a>
+  <a data-nav href="desktop.html">9de-desktop (Finder)</a>
+  <a data-nav href="settings.html">9de-settings</a>
+</div>
+<div class="group">
+  <div class="gtitle">Deep dive</div>
+  <a data-nav href="codewalk.html">Code walkthrough</a>
+  <a data-nav href="contracts.html">Contracts & invariants</a>
+  <a data-nav href="ipc.html">IPC & 9P services</a>
+  <a data-nav href="panel_api.html">Panel module API</a>
+  <a data-nav href="lib9deui_ref.html">lib9deui reference</a>
+  <a data-nav href="perf.html">Performance rules</a>
+  <a data-nav href="faq.html">FAQ</a>
+</div>
+<div class="group">
+  <div class="gtitle">Ops</div>
+  <a data-nav href="config.html">Configuration</a>
+  <a data-nav href="logging.html">Logging</a>
+  <a data-nav href="dev.html">Development workflow</a>
+  <a data-nav href="examples.html">Examples</a>
+  <a data-nav href="libraries.html">Libraries</a>
+  <a data-nav href="lib9deui.html">lib9deui</a>
+  <a data-nav href="lib9deui_components.html">UI components</a>
+  <a data-nav href="lib9deui_runtime.html">UI runtime API</a>
+  <a data-nav href="lib9deui_async.html">Async & services</a>
+</div>
+    </aside>
+
+    <main class="content">
+      <h2>UI runtime API</h2>
+<p class="muted">
+This is the declarative runtime contract. It’s designed for: <b>predictable performance</b>, <b>consistent focus</b>,
+and <b>scriptable system integration</b>.
+</p>
+
+<h3>Node lifecycle</h3>
+<ul>
+  <li><b>Build:</b> create a tree of nodes (builders).</li>
+  <li><b>Measure:</b> nodes compute desired size under constraints.</li>
+  <li><b>Layout:</b> nodes get rectangles assigned.</li>
+  <li><b>Draw:</b> nodes draw into a target image (prefer offscreen).</li>
+  <li><b>Event:</b> UI thread routes events to focused or hit-tested node.</li>
+</ul>
+
+<h3>Core interfaces (planned)</h3>
+<pre><code>typedef struct UiNode UiNode;
+typedef struct UiCtx  UiCtx;
+typedef struct UiEvt  UiEvt;
+typedef struct UiSz   UiSz;
+typedef struct UiRc   UiRc;
+
+typedef struct UiVt UiVt;
+struct UiVt{
+  UiSz  (*measure)(UiNode*, UiCtx*, UiSz avail);
+  void  (*layout)(UiNode*, UiCtx*, UiRc r);
+  void  (*draw)(UiNode*, UiCtx*, Image *dst);
+  int   (*event)(UiNode*, UiCtx*, UiEvt *e);  // 1 if consumed
+  void  (*free)(UiNode*);
+};
+
+struct UiNode{
+  UiVt *vt;
+  UiRc  r;
+  int   dirty;
+  int   focusable;
+  // parent/children pointers (layout containers manage these)
+};</code></pre>
+
+<h3>Invalidation</h3>
+<ul>
+  <li><code>uiInvalidate(node)</code> marks dirty and schedules a redraw.</li>
+  <li><code>uiInvalidateRect(root, rect)</code> optional later (partial redraw).</li>
+  <li>Redraw is coalesced into the next tick.</li>
+</ul>
+
+<h3>Focus model</h3>
+<ul>
+  <li>Single focused node at a time.</li>
+  <li>Tab-order is deterministic (tree order, with explicit overrides possible).</li>
+  <li>Escape closes transient overlays (menus/dialogs) before it reaches the app.</li>
+</ul>
+
+<h3>Scrolling & virtualization</h3>
+<p class="muted">Required for heavy desktops.</p>
+<pre><code>// planned: list virtualization hooks
+int first = uivisfirst(list, viewport);
+int last  = uivislast(list, viewport);
+for(i=first; i&lt;=last; i++) drawRow(i);</code></pre>
+
+<p>See also: <a href="lib9deui_async.html">Async & services</a>.</p>
+
+      <div class="footer">9DE documentation — 2025-12-27.</div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

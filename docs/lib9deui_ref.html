@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>9DE docs — lib9deui reference</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="header">
+    <div class="wrap">
+      <div class="title">9DE docs</div>
+      <div class="meta">desktop-only · shell contract · declarative UI</div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <aside class="sidebar" role="navigation" aria-label="Documentation navigation">
+      <div class="group">
+  <div class="gtitle">Overview</div>
+  <a data-nav href="index.html">Getting started</a>
+  <a data-nav href="naming.html">Naming & entrypoints</a>
+  <a data-nav href="roadmap.html">Roadmap</a>
+</div>
+<div class="group">
+  <div class="gtitle">System</div>
+  <a data-nav href="system.html">9front + 9DE integration</a>
+  <a data-nav href="srv9de.html">/srv/9de control plane</a>
+  <a data-nav href="user.html">User guide</a>
+  <a data-nav href="admin.html">Admin guide</a>
+</div>
+<div class="group">
+  <div class="gtitle">Architecture</div>
+  <a data-nav href="shell.html">Shell contract</a>
+  <a data-nav href="surfaces.html">Surfaces</a>
+  <a data-nav href="rows.html">Rows</a>
+  <a data-nav href="declarative.html">Declarative UI</a>
+  <a data-nav href="appearance.html">Appearance &amp; style</a>
+  <a data-nav href="runtime.html">Runtime & events</a>
+  <a data-nav href="realtime.html">Realtime & animation</a>
+  <a data-nav href="scheduler.html">Scheduler</a>
+  <a data-nav href="services.html">Services & UI</a>
+</div>
+<div class="group">
+  <div class="gtitle">Components</div>
+  <a data-nav href="control.html">Control Center</a>
+  <a data-nav href="panel.html">9de-panel</a>
+  <a data-nav href="dash.html">9de-dash</a>
+  <a data-nav href="desktop.html">9de-desktop (Finder)</a>
+  <a data-nav href="settings.html">9de-settings</a>
+</div>
+<div class="group">
+  <div class="gtitle">Deep dive</div>
+  <a data-nav href="codewalk.html">Code walkthrough</a>
+  <a data-nav href="contracts.html">Contracts & invariants</a>
+  <a data-nav href="ipc.html">IPC & 9P services</a>
+  <a data-nav href="panel_api.html">Panel module API</a>
+  <a data-nav href="lib9deui_ref.html">lib9deui reference</a>
+  <a data-nav href="perf.html">Performance rules</a>
+  <a data-nav href="faq.html">FAQ</a>
+</div>
+<div class="group">
+  <div class="gtitle">Ops</div>
+  <a data-nav href="config.html">Configuration</a>
+  <a data-nav href="logging.html">Logging</a>
+  <a data-nav href="dev.html">Development workflow</a>
+  <a data-nav href="examples.html">Examples</a>
+  <a data-nav href="libraries.html">Libraries</a>
+  <a data-nav href="lib9deui.html">lib9deui</a>
+  <a data-nav href="lib9deui_components.html">UI components</a>
+  <a data-nav href="lib9deui_runtime.html">UI runtime API</a>
+  <a data-nav href="lib9deui_async.html">Async & services</a>
+</div>
+
+    </aside>
+
+    <main class="content">
+<h2>Getting started</h2>
+<p class="muted">Updated: 2025-12-27. 9DE is a desktop shell for 9front: <b>rio stays the window manager</b>. 9DE is the UI contract + services + a small UI kit.</p>
+
+<div class="callout">
+  <b>Hard rule:</b> apps do <b>not</b> invent styles. They consume tokens (lib9deui).
+  Customization is <b>presets + placement + module order</b>. Not a theme editor.
+</div>
+
+<h3>0) Build</h3>
+<pre><code>mk</code></pre>
+
+<h3>1) Run (dev, safe)</h3>
+<pre><code># from the repo root
+./bin/9de-start.rc</code></pre>
+<p class="muted">This starts panel + shell in rio without touching login files.</p>
+
+<h3>2) Install for your user (still reversible)</h3>
+<pre><code># copy binaries (recommended)
+cp cmd/9de-panel/9de-panel $home/bin/
+cp cmd/9de-shell/9de-shell $home/bin/
+cp cmd/9de-session/9de-session $home/bin/
+cp cmd/ui-demo/ui9demo $home/bin/
+cp bin/9de bin/9de-riostart $home/bin/
+chmod +x $home/bin/9de $home/bin/9de-riostart</code></pre>
+
+<h3>3) Generate your session files</h3>
+<pre><code>9de init
+9de gen</code></pre>
+
+<h3>4) Start on login (recommended pattern)</h3>
+<p>Use a wrapper: keep your original <code>riostart</code> intact and call 9DE first.</p>
+<pre><code># $home/bin/riostart (wrapper)
+#!/bin/rc
+9de-riostart
+if(test -e $home/bin/riostart.orig) . $home/bin/riostart.orig</code></pre>
+
+<hr/>
+
+<h3>Session modes (so you don’t brick your desktop)</h3>
+<div class="kv">
+  <div><code>session_mode=normal</code></div><div>Daily driver. Starts the shell and panel.</div>
+  <div><code>session_mode=test</code></div><div>Normal + debug windows (<code>ui9demo</code>, log tails, <code>/srv/9de</code> watcher).</div>
+  <div><code>session_mode=dev</code></div><div>Test + a repo workbench shell window (<code>cd $home/src/9de</code>).</div>
+</div>
+<pre><code># $home/lib/9de/config.rc
+session_mode=test
+test_layout=laptop</code></pre>
+
+<h3>State & logs</h3>
+<div class="kv">
+  <div><code>$home/lib/9de/defaults.rc</code></div><div>Shipped defaults.</div>
+  <div><code>$home/lib/9de/config.rc</code></div><div>User overrides (written by Settings/Control Center).</div>
+  <div><code>$home/lib/9de/autostart.rc</code></div><div>Generated startup (runs the shell).</div>
+  <div><code>$home/lib/9de/log/*.log</code></div><div>stdout of components.</div>
+  <div><code>$home/lib/9de/log/*.err</code></div><div>stderr of components (watch this first).</div>
+  <div><code>/srv/9de</code></div><div>Shell control plane (9P). Use it for state/ctl/events.</div>
+</div>
+
+<p>Next: <a href="codewalk.html">Code walkthrough</a>, <a href="contracts.html">Contracts</a>, <a href="ipc.html">IPC & 9P</a>.</p>
+
+<div class="footer">9DE documentation — 2025-12-27.</div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
