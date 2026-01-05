@@ -5,4 +5,13 @@ OFILES=main.$O srv9p.$O
 
 LIBS=-l9p -lthread
 
-</sys/src/cmd/mkone
+all:V: $TARG
+
+$TARG: $OFILES
+	$LD -o $TARG $OFILES $LIBS
+
+%.6: %.c
+	$CC $CFLAGS -c $stem.c
+
+clean:V:
+	rm -f *.$O $TARG
