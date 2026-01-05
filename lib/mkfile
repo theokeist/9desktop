@@ -1,9 +1,6 @@
 </$objtype/mkfile
 
 LIB=lib9deui.a
-CFLAGS=-DUI9_NO_SYS_HEADERS -I../include
-
-LIB=lib9deui.a
 
 OFILES=\
 	ui.$O \
