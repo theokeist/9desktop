@@ -1,4 +1,5 @@
 all:V:
+	# Build the UI library first, then all command binaries.
 	cd lib; mk
 	cd cmd/ui-demo; mk
 	cd cmd/9de-dash; mk
@@ -6,6 +7,15 @@ all:V:
 	cd cmd/9de-shell; mk
 	cd cmd/9de-session; mk
 	cd cmd/9de-control; mk
+
+demo:V:
+	# Build only the library and the UI demo.
+	cd lib; mk
+	cd cmd/ui-demo; mk
+
+examples:V:
+	# Examples are script/config driven; ensure demo and library are built.
+	mk demo
 
 clean:V:
 	cd cmd/9de-session; mk clean

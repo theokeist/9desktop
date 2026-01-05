@@ -1,4 +1,7 @@
+</$objtype/mkfile
+
 TARG=9de-shell
+CFLAGS=-DUI9_NO_SYS_HEADERS -I../../include
 OFILES=main.$O srv9p.$O
 
 LIBS=-l9p -lthread

@@ -1,5 +1,7 @@
+</$objtype/mkfile
+
 TARG=ui9demo
-CFLAGS=-I../../include
+CFLAGS=-DUI9_NO_SYS_HEADERS -I../../include
 OFILES=main.$O
 LIBS=../../lib/lib9deui.a -ldraw -levent
 

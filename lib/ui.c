@@ -74,8 +74,9 @@ static void
 ui9rebuild(Ui9 *ui)
 {
 	Ui9Theme *t = &ui->theme;
+	int i;
 
-	for(int i=0; i<Ui9CCount; i++)
+	for(i=0; i<Ui9CCount; i++)
 		freeimg(&ui->img[i]);
 
 	/* Base tokens */
@@ -98,7 +99,7 @@ ui9rebuild(Ui9 *ui)
 	ui->img[Ui9CTopbarBg]   = mk1x1(ui->d, RGB24, t->topbgrgb);
 	ui->img[Ui9CTopbarText] = mk1x1(ui->d, RGB24, t->toptextrgb);
 
-	for(int i=0; i<Ui9CCount; i++)
+	for(i=0; i<Ui9CCount; i++)
 		if(ui->img[i] == nil)
 			sysfatal("ui9: theme alloc failed: %r");
 }
@@ -118,7 +119,8 @@ ui9init(Ui9 *ui, Display *d, Font *font)
 void
 ui9free(Ui9 *ui)
 {
-	for(int i=0; i<Ui9CCount; i++)
+	int i;
+	for(i=0; i<Ui9CCount; i++)
 		freeimg(&ui->img[i]);
 }
 

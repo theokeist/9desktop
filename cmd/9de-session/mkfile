@@ -1,4 +1,7 @@
+</$objtype/mkfile
+
 TARG=9de-session
+CFLAGS=-DUI9_NO_SYS_HEADERS -I../../include
 OFILES=main.$O
 
 </sys/src/cmd/mkone

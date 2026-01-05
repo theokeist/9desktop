@@ -1,4 +1,3 @@
-\
 #ifndef _9DEUI_ICON_H_
 #define _9DEUI_ICON_H_
 
