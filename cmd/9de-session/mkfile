@@ -3,4 +3,13 @@
 TARG=9de-session
 OFILES=main.$O
 
-</sys/src/cmd/mkone
+all:V: $TARG
+
+$TARG: $OFILES
+	$LD -o $TARG $OFILES
+
+%.6: %.c
+	$CC $CFLAGS -c $stem.c
+
+clean:V:
+	rm -f *.$O $TARG

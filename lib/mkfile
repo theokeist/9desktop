@@ -3,6 +3,8 @@
 LIB=lib9deui.a
 CFLAGS=-I../include
 
+LIB=lib9deui.a
+
 OFILES=\
 	ui.$O \
 	theme.$O \
@@ -21,4 +23,13 @@ OFILES=\
 	widgets/progress.$O \
 	widgets/dropdown.$O \
 
-</sys/src/cmd/mklib
+all:V: $LIB
+
+$LIB: $OFILES
+	$AR r $LIB $OFILES
+
+%.6: %.c
+	$CC $CFLAGS -c $stem.c
+
+clean:V:
+	rm -f *.$O $LIB widgets/*.$O
