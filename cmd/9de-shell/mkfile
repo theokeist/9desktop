@@ -1,3 +1,5 @@
+<$objtype/mkfile
+
 TARG=9de-shell
 OFILES=main.$O srv9p.$O
 
