@@ -1,4 +1,3 @@
-\
 #include <u.h>
 #include <libc.h>
 #include <thread.h>
@@ -15,12 +14,14 @@
  */
 
 static char*
-home(void)
+userhome(void)
 {
-	char *h = getenv("home");
-	if(h == nil) h = getenv("HOME");
-	if(h == nil) h = "/usr";
-	return h;
+	char *home = getenv("home");
+	if(home == nil)
+		home = getenv("HOME");
+	if(home == nil)
+		home = "/usr";
+	return home;
 }
 
 static void
@@ -56,14 +57,14 @@ void threadmain(int argc, char **argv)
 	snprint(cmd, sizeof cmd,
 		"mkdir -p %s/lib/9de/log %s/lib/9de/run; "
 		"window 0,0,9999,34 rc -c '9de-panel >%s/lib/9de/log/9de-panel.log >[2]%s/lib/9de/log/9de-panel.err'",
-		home(), home(), home(), home());
+		userhome(), userhome(), userhome(), userhome());
 	spawnrc(cmd);
 
 	/* dev: also start ui9demo */
 	if(dev){
 		snprint(cmd, sizeof cmd,
 			"window -scroll rc -c 'ui9demo >%s/lib/9de/log/ui9demo.log >[2]%s/lib/9de/log/ui9demo.err'",
-			home(), home());
+			userhome(), userhome());
 		spawnrc(cmd);
 	}
 
