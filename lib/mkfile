@@ -1,5 +1,10 @@
-LIB=lib9deui.a
+O=6
+CC=6c
+AS=6a
+AR=ar
 CFLAGS=-I../include
+
+LIB=lib9deui.a
 
 OFILES=\
 	ui.$O \
@@ -19,4 +24,13 @@ OFILES=\
 	widgets/progress.$O \
 	widgets/dropdown.$O \
 
-</sys/src/cmd/mklib
+all:V: $LIB
+
+$LIB: $OFILES
+	$AR r $LIB $OFILES
+
+%.6: %.c
+	$CC $CFLAGS -c $stem.c
+
+clean:V:
+	rm -f *.$O $LIB widgets/*.$O

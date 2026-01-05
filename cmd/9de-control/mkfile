@@ -1,6 +1,19 @@
+O=6
+CC=6c
+LD=6l
+
 TARG=9de-control
 CFLAGS=-I../../include
 OFILES=main.$O
 LIBS=../../lib/lib9deui.a -ldraw -levent
 
-</sys/src/cmd/mkone
+all:V: $TARG
+
+$TARG: $OFILES
+	$LD -o $TARG $OFILES $LIBS
+
+%.6: %.c
+	$CC $CFLAGS -c $stem.c
+
+clean:V:
+	rm -f *.$O $TARG
