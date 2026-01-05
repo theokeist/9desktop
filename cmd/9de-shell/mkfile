@@ -1,6 +1,4 @@
-O=6
-CC=6c
-LD=6l
+</$objtype/mkfile
 
 TARG=9de-shell
 OFILES=main.$O srv9p.$O

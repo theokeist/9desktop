@@ -1,7 +1,6 @@
-O=6
-CC=6c
-AS=6a
-AR=ar
+</$objtype/mkfile
+
+LIB=lib9deui.a
 CFLAGS=-I../include
 
 LIB=lib9deui.a
