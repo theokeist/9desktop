@@ -1,6 +1,17 @@
-<$objtype/mkfile
+O=6
+CC=6c
+LD=6l
 
 TARG=9de-session
 OFILES=main.$O
 
-</sys/src/cmd/mkone
+all:V: $TARG
+
+$TARG: $OFILES
+	$LD -o $TARG $OFILES
+
+%.6: %.c
+	$CC $CFLAGS -c $stem.c
+
+clean:V:
+	rm -f *.$O $TARG
