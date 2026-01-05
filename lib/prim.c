@@ -14,6 +14,8 @@ ui9_roundrect(Ui9 *ui, Rectangle r, int rad, Image *fill)
 		return;
 	}
 
+	/* for C89/6c: declare loop counters up front */
+
 	old = ui->dst->clipr;
 	replclipr(ui->dst, 0, r);
 

@@ -1,6 +1,12 @@
 #ifndef _9DEUI_THEME_H_
 #define _9DEUI_THEME_H_
 
+#ifndef UI9_NO_SYS_HEADERS
+#include <u.h>
+#include <libc.h>
+#include <draw.h>
+#endif
+
 typedef struct Ui9Theme Ui9Theme;
 typedef struct Ui9 Ui9;
 

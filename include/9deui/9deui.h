@@ -1,12 +1,11 @@
 #ifndef _9DEUI_H_
 #define _9DEUI_H_
 
-/*
- * Consumers must include system headers first, e.g.:
- *   #include <u.h>
- *   #include <libc.h>
- *   #include <draw.h>
- */
+#ifndef UI9_NO_SYS_HEADERS
+#include <u.h>
+#include <libc.h>
+#include <draw.h>
+#endif
 
 #include <9deui/theme.h>
 #include <9deui/prim.h>
