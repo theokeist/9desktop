@@ -46,7 +46,7 @@ fn ensurepath {
     if(! ~ $path $home/bin){
         path=($home/bin $path)
         if(test -e $home/lib/profile){
-            if(! grep -n 'path=\(\$home/bin' $home/lib/profile >/dev/null 2>&1){
+            if(! grep -n 'home/bin' $home/lib/profile >/dev/null 2>&1){
                 echo '' >> $home/lib/profile
                 echo '# added by 9de-setup (for 9DE tools)' >> $home/lib/profile
                 echo 'if(! ~ $path $home/bin) path=($home/bin $path)' >> $home/lib/profile
@@ -58,6 +58,31 @@ fn ensurepath {
 fn have {
     if(which $1 >/dev/null 2>&1) echo 1
     if not echo 0
+}
+
+fn detectcc {
+    o=$objtype
+    if(~ $o '') o=amd64   # default on 9front/amd64
+    switch($o){
+    case amd64
+        echo 6c
+    case 386
+        echo 8c
+    case arm
+        echo 5c
+    case *
+        echo 6c
+    }
+}
+
+fn checkprereqs {
+    info 'Checking prerequisites...'
+    if(~ `{have mk} 0) die 'need mk (Plan 9 build tool) on $path'
+    if(! test -e /sys/src/cmd/mklib) die 'missing /sys/src/cmd/mklib (install src tree)'
+
+    cc=`{detectcc}
+    if(~ `{have $cc} 0) die 'missing compiler: '^$cc^' (set objtype correctly?)'
+    if(~ `{have unzip} 0) die 'need unzip(1). Install unzip or copy the repo tree by other means.'
 }
 
 fn installfile {
@@ -80,10 +105,9 @@ zip=$1
 if(~ $zip '') die 'usage: rc 9de-setup-v2.rc /path/to/9de_toolkit_v10.zip'
 if(! test -e $zip) die 'zip not found: '^$zip
 
-if(~ `{have unzip} 0) die 'need unzip(1). Install unzip or copy the repo tree by other means.'
-
 mklogdir
 ensurepath
+checkprereqs
 
 mkdir -p $home/src
 cd $home/src || die 'cannot cd to '^$home/src
