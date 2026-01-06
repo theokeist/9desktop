@@ -1,4 +1,3 @@
-\
 #include <u.h>
 #include <libc.h>
 #include <draw.h>
@@ -16,28 +15,30 @@
 static Ui9 ui;
 
 static char*
-home(void)
+userhome(void)
 {
-	char *h = getenv("home");
-	if(h == nil) h = getenv("HOME");
-	if(h == nil) h = "/usr";
-	return h;
+	char *home = getenv("home");
+	if(home == nil)
+		home = getenv("HOME");
+	if(home == nil)
+		home = "/usr";
+	return home;
 }
 
 static char*
 runpath(char *name)
 {
-	static char p[512];
-	snprint(p, sizeof p, "%s/lib/9de/run/%s", home(), name);
-	return p;
+	static char pathbuf[512];
+	snprint(pathbuf, sizeof pathbuf, "%s/lib/9de/run/%s", userhome(), name);
+	return pathbuf;
 }
 
 static void
 ensure_run_dir(void)
 {
-	char dir[512];
-	snprint(dir, sizeof dir, "%s/lib/9de/run", home());
-	create(dir, OREAD, DMDIR|0755);
+	char runpath[512];
+	snprint(runpath, sizeof runpath, "%s/lib/9de/run", userhome());
+	create(runpath, OREAD, DMDIR|0755);
 }
 
 static void
@@ -89,14 +90,19 @@ tile(Rectangle r, char *title, char *sub, Image *accent)
 static void
 redraw(void)
 {
-	Rectangle r = screen->r;
-	int pad = 14;
-	int hdrh = 54;
-	int colgap = 14;
+	Rectangle r, hdr, cmd, body, c1, c2, c3, big, sc;
+	int pad, hdrh, colgap;
+	int col1w, col2w, col3w;
+	int y, th, ty;
+
+	r = screen->r;
+	pad = 14;
+	hdrh = 54;
+	colgap = 14;
 
 	draw(screen, r, ui9img(&ui, Ui9CBackground), nil, ZP);
 
-	Rectangle hdr = r;
+	hdr = r;
 	hdr.max.y = hdr.min.y + hdrh;
 	draw(screen, hdr, ui9img(&ui, Ui9CSurface), nil, ZP);
 	border(screen, hdr, 1, ui9img(&ui, Ui9CBorder), ZP);
@@ -104,35 +110,35 @@ redraw(void)
 	ui9_boldstring(&ui, Pt(hdr.min.x + 14, hdr.min.y + 18), "Dashboard");
 	ui9_mutedstring(&ui, Pt(hdr.min.x + 150, hdr.min.y + 20), "desktop shell · dash surface");
 
-	Rectangle cmd = Rect(hdr.max.x - 640, hdr.min.y + 14, hdr.max.x - 14, hdr.min.y + 40);
+	cmd = Rect(hdr.max.x - 640, hdr.min.y + 14, hdr.max.x - 14, hdr.min.y + 40);
 	draw(screen, cmd, ui9img(&ui, Ui9CSurface), nil, ZP);
 	border(screen, cmd, 1, ui9img(&ui, Ui9CBorder), ZP);
 	ui9_monosmall(&ui, Pt(cmd.min.x + 10, cmd.min.y + 7), "> open control · logs · style terminal");
 
-	Rectangle body = r;
+	body = r;
 	body.min.x += pad;
 	body.max.x -= pad;
 	body.min.y = hdr.max.y + pad;
 	body.max.y -= pad;
 
-	int col1w = 360;
-	int col2w = 560;
-	int col3w = Dx(body) - col1w - col2w - 2*colgap;
+	col1w = 360;
+	col2w = 560;
+	col3w = Dx(body) - col1w - col2w - 2*colgap;
 	if(col3w < 200) col3w = 200;
 
-	Rectangle c1 = body;
+	c1 = body;
 	c1.max.x = c1.min.x + col1w;
 
-	Rectangle c2 = body;
+	c2 = body;
 	c2.min.x = c1.max.x + colgap;
 	c2.max.x = c2.min.x + col2w;
 
-	Rectangle c3 = body;
+	c3 = body;
 	c3.min.x = c2.max.x + colgap;
 
 	ui9_monosmall(&ui, Pt(c1.min.x, c1.min.y - 2), "LAUNCH");
-	int y = c1.min.y + 12;
-	int th = 60;
+	y = c1.min.y + 12;
+	th = 60;
 	tile(Rect(c1.min.x, y, c1.max.x, y+th), "Control Center", "session · placement · styles", ui9img(&ui, Ui9CAccent));
 	y += th + 10;
 	tile(Rect(c1.min.x, y, c1.max.x, y+th), "Launcher", "search apps · recent", nil);
@@ -142,14 +148,14 @@ redraw(void)
 	tile(Rect(c1.min.x, y, c1.max.x, y+th), "Files", "browse /home /usr", nil);
 
 	ui9_monosmall(&ui, Pt(c2.min.x, c2.min.y - 2), "SYSTEM");
-	Rectangle big = Rect(c2.min.x, c2.min.y + 12, c2.max.x, c2.min.y + 12 + 150);
+	big = Rect(c2.min.x, c2.min.y + 12, c2.max.x, c2.min.y + 12 + 150);
 	draw(screen, big, ui9img(&ui, Ui9CSurface2), nil, ZP);
 	border(screen, big, 1, ui9img(&ui, Ui9CBorder), ZP);
 	ui9_boldstring(&ui, Pt(big.min.x + 12, big.min.y + 12), "Session: 9DE (rio)");
 	ui9_mutedstring(&ui, Pt(big.min.x + 12, big.min.y + 34), "style preset: terminal · logs: split · autostart: shell");
 	ui9_monosmall(&ui, Pt(big.min.x + 12, big.min.y + 66), "cpu 37%   mem 58%   net 21%");
 
-	int ty = big.max.y + 12;
+	ty = big.max.y + 12;
 	tile(Rect(c2.min.x, ty, c2.min.x + (Dx(c2)/2) - 7, ty+70), "Panel placement", "top/bottom/left", nil);
 	tile(Rect(c2.min.x + (Dx(c2)/2) + 7, ty, c2.max.x, ty+70), "Style preset", "terminal/dark/glass", nil);
 
@@ -157,7 +163,7 @@ redraw(void)
 	tile(Rect(c2.min.x, ty, c2.max.x, ty+70), "Logs", "open .err / .log streams", ui9img(&ui, Ui9CGood));
 
 	ui9_monosmall(&ui, Pt(c3.min.x, c3.min.y - 2), "SHELL CONTRACT");
-	Rectangle sc = Rect(c3.min.x, c3.min.y + 12, c3.max.x, c3.min.y + 12 + 220);
+	sc = Rect(c3.min.x, c3.min.y + 12, c3.max.x, c3.min.y + 12 + 220);
 	draw(screen, sc, ui9img(&ui, Ui9CSurface2), nil, ZP);
 	border(screen, sc, 1, ui9img(&ui, Ui9CBorder), ZP);
 	ui9_boldstring(&ui, Pt(sc.min.x + 12, sc.min.y + 12), "Fixed placement, flexible apps");

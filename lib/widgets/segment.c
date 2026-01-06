@@ -6,7 +6,8 @@
 int
 ui9_segment3_hit(Rectangle r[3], Point p)
 {
-	for(int i=0;i<3;i++)
+	int i;
+	for(i=0; i<3; i++)
 		if(ptinrect(p, r[i]))
 			return i;
 	return -1;
@@ -17,8 +18,9 @@ ui9_segment3_draw(Ui9 *ui, Rectangle r[3], char *label[3], int sel)
 {
 	Font *f = ui->font ? ui->font : font;
 	int rad = ui->theme.radius;
+	int i;
 
-	for(int i=0;i<3;i++){
+	for(i=0; i<3; i++){
 		Image *fill = (i == sel) ? ui9img(ui, Ui9CAccent2) : ui9img(ui, Ui9CSurface2);
 		Image *txt  = (i == sel) ? ui9img(ui, Ui9CText)   : ui9img(ui, Ui9CMuted);
 		int w;

@@ -1,3 +1,5 @@
+</$objtype/mkfile
+
 LIB=lib9deui.a
 CFLAGS=-I../include
 

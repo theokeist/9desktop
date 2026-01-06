@@ -1,3 +1,5 @@
+</$objtype/mkfile
+
 TARG=ui9demo
 CFLAGS=-I../../include
 OFILES=main.$O
