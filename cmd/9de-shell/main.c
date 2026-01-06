@@ -41,6 +41,8 @@ spawnrc(char *cmd)
 void threadmain(int argc, char **argv)
 {
 	int dev = 0;
+	char cmd[2048];
+
 	ARGBEGIN{
 	case 'd':
 		dev = 1;
@@ -50,8 +52,6 @@ void threadmain(int argc, char **argv)
 	/* start control plane (/srv/9de) */
 	srv9pstart();
 	srv9ppostevent("shell boot");
-
-	char cmd[2048];
 
 	/* start panel pinned top with split logs */
 	snprint(cmd, sizeof cmd,

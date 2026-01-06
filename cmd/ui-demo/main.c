@@ -99,10 +99,10 @@ layout(void)
 			int h = 28;
 			int x = row5.max.x - 12 - (w*3 + 8);
 			int y0 = row5.min.y + (Dy(row5)-h)/2;
-			for(int i=0;i<3;i++){
-				rseg[i] = Rect(x + i*(w+4), y0, x + i*(w+4) + w, y0+h);
+				int i;
+				for(i=0; i<3; i++)
+					rseg[i] = Rect(x + i*(w+4), y0, x + i*(w+4) + w, y0+h);
 			}
-		}
 
 		/* alpha preview box under slider */
 		rpreview = Rect(rslider.min.x, row3.max.y + 10, rslider.max.x, row3.max.y + 10 + 54);
@@ -149,8 +149,10 @@ static void
 draw_checker(Rectangle r)
 {
 	int s = 8;
-	for(int y=r.min.y; y<r.max.y; y+=s){
-		for(int x=r.min.x; x<r.max.x; x+=s){
+	int y, x;
+
+	for(y=r.min.y; y<r.max.y; y+=s){
+		for(x=r.min.x; x<r.max.x; x+=s){
 			Rectangle b = Rect(x, y, x+s, y+s);
 			Image *fill = (((x/s) + (y/s)) & 1) ? ui9img(&ui, Ui9CSurface2) : ui9img(&ui, Ui9CSurface);
 			draw(screen, b, fill, nil, ZP);
@@ -183,14 +185,18 @@ redraw(void)
 
 	/* left nav panel */
 	{
+		char *items[4] = { "Controls", "Window", "Components", "About" };
+		Image *fill;
+		Image *txt;
+		int i;
+
 		ui9_roundrect(&ui, insetrect(rnav, 10), ui.theme.radius, ui9img(&ui, Ui9CSurface));
 		border(screen, insetrect(rnav, 10), 1, ui9img(&ui, Ui9CBorder), ZP);
 
-		char *items[4] = { "Controls", "Window", "Components", "About" };
-		for(int i=0;i<4;i++){
+		for(i=0; i<4; i++){
 			Rectangle it = navitem[i];
-			Image *fill = (i==navsel) ? ui9img(&ui, Ui9CTopbarBg) : ui9img(&ui, Ui9CSurface);
-			Image *txt  = (i==navsel) ? ui9img(&ui, Ui9CTopbarText) : ui9img(&ui, Ui9CText);
+			fill = (i==navsel) ? ui9img(&ui, Ui9CTopbarBg) : ui9img(&ui, Ui9CSurface);
+			txt  = (i==navsel) ? ui9img(&ui, Ui9CTopbarText) : ui9img(&ui, Ui9CText);
 
 			ui9_roundrect(&ui, it, ui.theme.radius, fill);
 			if(i==navsel)
@@ -297,11 +303,14 @@ onmouse(Mouse m)
 		return;
 
 	/* nav select */
-	for(int i=0;i<4;i++){
-		if(ptinrect(m.xy, navitem[i])){
-			navsel = i;
-			redraw();
-			return;
+	{
+		int i;
+		for(i=0; i<4; i++){
+			if(ptinrect(m.xy, navitem[i])){
+				navsel = i;
+				redraw();
+				return;
+			}
 		}
 	}
 

@@ -46,7 +46,7 @@ fn ensurepath {
     if(! ~ $path $home/bin){
         path=($home/bin $path)
         if(test -e $home/lib/profile){
-            if(! grep -n 'home/bin' $home/lib/profile >/dev/null 2>&1){
+            if(! grep 'home/bin' $home/lib/profile >/dev/null 2>&1){
                 echo '' >> $home/lib/profile
                 echo '# added by 9de-setup (for 9DE tools)' >> $home/lib/profile
                 echo 'if(! ~ $path $home/bin) path=($home/bin $path)' >> $home/lib/profile
