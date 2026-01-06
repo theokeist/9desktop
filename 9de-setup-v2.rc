@@ -1,4 +1,3 @@
-\
 #!/bin/rc
 # 9DE quick setup for 9front (v2)
 #
@@ -16,13 +15,30 @@
 #   $home/lib/9de/log/setup.log
 #   $home/lib/9de/log/setup.err
 
+esc=`{awk 'BEGIN{printf("\033")}'}
+blue=$esc^'[1;34m'
+green=$esc^'[1;32m'
+yellow=$esc^'[1;33m'
+reset=$esc^'[0m'
+logdir=$home/lib/9de/log
+logfile=$logdir/setup.log
+errfile=$logdir/setup.err
+
+fn info {
+    echo $blue^$*^$reset
+}
+
+fn success {
+    echo $green^$*^$reset
+}
+
 fn die {
-    echo '9de-setup: '^$* >[1=2]
+    echo $yellow^'9de-setup: '^$*^$reset >[1=2]
     exits 'fail'
 }
 
 fn mklogdir {
-    mkdir -p $home/lib/9de/log
+    mkdir -p $logdir
     mkdir -p $home/lib/9de/run
 }
 
@@ -30,7 +46,7 @@ fn ensurepath {
     if(! ~ $path $home/bin){
         path=($home/bin $path)
         if(test -e $home/lib/profile){
-            if(! grep -n 'path=\(\$home/bin' $home/lib/profile >/dev/null 2>&1){
+            if(! grep 'home/bin' $home/lib/profile >/dev/null 2>&1){
                 echo '' >> $home/lib/profile
                 echo '# added by 9de-setup (for 9DE tools)' >> $home/lib/profile
                 echo 'if(! ~ $path $home/bin) path=($home/bin $path)' >> $home/lib/profile
@@ -42,6 +58,31 @@ fn ensurepath {
 fn have {
     if(which $1 >/dev/null 2>&1) echo 1
     if not echo 0
+}
+
+fn detectcc {
+    o=$objtype
+    if(~ $o '') o=amd64   # default on 9front/amd64
+    switch($o){
+    case amd64
+        echo 6c
+    case 386
+        echo 8c
+    case arm
+        echo 5c
+    case *
+        echo 6c
+    }
+}
+
+fn checkprereqs {
+    info 'Checking prerequisites...'
+    if(~ `{have mk} 0) die 'need mk (Plan 9 build tool) on $path'
+    if(! test -e /sys/src/cmd/mklib) die 'missing /sys/src/cmd/mklib (install src tree)'
+
+    cc=`{detectcc}
+    if(~ `{have $cc} 0) die 'missing compiler: '^$cc^' (set objtype correctly?)'
+    if(~ `{have unzip} 0) die 'need unzip(1). Install unzip or copy the repo tree by other means.'
 }
 
 fn installfile {
@@ -64,10 +105,9 @@ zip=$1
 if(~ $zip '') die 'usage: rc 9de-setup-v2.rc /path/to/9de_toolkit_v10.zip'
 if(! test -e $zip) die 'zip not found: '^$zip
 
-if(~ `{have unzip} 0) die 'need unzip(1). Install unzip or copy the repo tree by other means.'
-
 mklogdir
 ensurepath
+checkprereqs
 
 mkdir -p $home/src
 cd $home/src || die 'cannot cd to '^$home/src
@@ -79,14 +119,17 @@ if(test -e $home/src/9de){
 }
 
 # extract (zip contains "9de/...")
-unzip -o $zip >$home/lib/9de/log/setup.log >[2]$home/lib/9de/log/setup.err
-if(! test -e $home/src/9de/mkfile) die 'extract failed; check setup.err'
+info 'Extracting 9DE archive ... (logs: '^$logfile^', '^$errfile^')'
+unzip -o $zip >$logfile >[2]$errfile
+if(! test -e $home/src/9de/mkfile) die 'extract failed; check '^$errfile
 
 cd $home/src/9de || die 'cannot cd to repo'
 
 # build
-mk >>$home/lib/9de/log/setup.log >[2]$home/lib/9de/log/setup.err
-if(! test -e cmd/9de-panel/9de-panel) die 'build failed; check setup.err'
+info 'Starting build ... (logs: '^$logfile^', '^$errfile^')'
+mk >>$logfile >[2]$errfile
+if(! test -e cmd/9de-panel/9de-panel) die 'build failed; check '^$errfile
+success 'Build complete.'
 
 # install to $home/bin
 mkdir -p $home/bin
@@ -106,8 +149,8 @@ installfile bin/9de-start.rc            $home/bin/9de-start.rc
 chmod +x $home/bin/9de $home/bin/9de-riostart $home/bin/9de-paneltest.rc $home/bin/9de-start.rc >/dev/null 2>&1
 
 # init + generate autostart
-9de init  >>$home/lib/9de/log/setup.log >[2]$home/lib/9de/log/setup.err
-9de gen   >>$home/lib/9de/log/setup.log >[2]$home/lib/9de/log/setup.err
+9de init  >>$logfile >[2]$errfile
+9de gen   >>$logfile >[2]$errfile
 
 # seed config with safe defaults if keys missing
 cfg=$home/lib/9de/config.rc
@@ -128,11 +171,11 @@ echo 'if(test -e $home/bin/riostart.orig) . $home/bin/riostart.orig' >> $home/bi
 chmod +x $home/bin/riostart >/dev/null 2>&1
 
 echo ''
-echo 'OK.'
+success 'Setup completed.'
 echo '  repo:      '$home/src/9de
 echo '  bin:       '$home/bin
 echo '  config:    '$home/lib/9de/config.rc
-echo '  logs:      '$home/lib/9de/log/setup.log' + setup.err'
+echo '  logs:      '$logfile' + '$errfile
 echo ''
 echo 'Run now:'
 echo '  9de start'

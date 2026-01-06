@@ -1,10 +1,6 @@
 #ifndef _9DEUI_H_
 #define _9DEUI_H_
 
-#include <u.h>
-#include <libc.h>
-#include <draw.h>
-
 #include "theme.h"
 #include "prim.h"
 #include "util.h"
