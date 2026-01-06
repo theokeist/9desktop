@@ -1,7 +1,7 @@
 #include <u.h>
 #include <libc.h>
 #include <draw.h>
-#include "../../include/9deui/9deui.h"
+#include <9deui/9deui.h>
 
 void
 ui9_textfield_draw(Ui9 *ui, Rectangle r, Rune *buf, int nbuf, int focused, char *placeholder)

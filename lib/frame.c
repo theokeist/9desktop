@@ -1,8 +1,7 @@
-\
 #include <u.h>
 #include <libc.h>
 #include <draw.h>
-#include "../include/9deui/9deui.h"
+#include <9deui/9deui.h>
 
 static ulong
 fnv1a(uchar *p, int n)

@@ -1,7 +1,7 @@
 #include <u.h>
 #include <libc.h>
 #include <draw.h>
-#include "../../include/9deui/9deui.h"
+#include <9deui/9deui.h>
 
 void
 ui9_dropdown_btn_draw(Ui9 *ui, Rectangle r, char *label, int open)

@@ -42,7 +42,7 @@ Quit with **Q**.
 Example include:
 
 ```c
-#include "9deui/9deui.h"
+#include <9deui/9deui.h>
 ```
 
 ### Minimal setup

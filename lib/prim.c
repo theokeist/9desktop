@@ -1,7 +1,7 @@
 #include <u.h>
 #include <libc.h>
 #include <draw.h>
-#include "../include/9deui/9deui.h"
+#include <9deui/9deui.h>
 
 void
 ui9_roundrect(Ui9 *ui, Rectangle r, int rad, Image *fill)
@@ -13,6 +13,8 @@ ui9_roundrect(Ui9 *ui, Rectangle r, int rad, Image *fill)
 		draw(ui->dst, r, fill, nil, ZP);
 		return;
 	}
+
+	/* for C89/6c: declare loop counters up front */
 
 	old = ui->dst->clipr;
 	replclipr(ui->dst, 0, r);

@@ -1,11 +1,10 @@
-\
 #include <u.h>
 #include <libc.h>
 #include <draw.h>
 #include <event.h>
 #include <bio.h>
 
-#include "../../include/9deui/9deui.h"
+#include <9deui/9deui.h>
 
 /*
  * 9de-panel v6: gradients + real "appearance knobs" (config.rc), still engineered.

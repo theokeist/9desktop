@@ -1,7 +1,7 @@
 #include <u.h>
 #include <libc.h>
 #include <draw.h>
-#include "../../include/9deui/9deui.h"
+#include <9deui/9deui.h>
 
 static int
 clampi(int v, int lo, int hi)
@@ -28,7 +28,8 @@ ui9_slider_draw(Ui9 *ui, Rectangle r, int value)
 	line(ui->dst, Pt(x1, y), Pt(fx, y), Endsquare, Endsquare, 3, ui9img(ui, Ui9CAccent), ZP);
 
 	/* ticks (subtle) */
-	for(int t=0; t<=4; t++){
+	int t;
+	for(t=0; t<=4; t++){
 		int tx = x1 + (w*t)/4;
 		line(ui->dst, Pt(tx, y-7), Pt(tx, y-4), Endsquare, Endsquare, 1, ui9img(ui, Ui9CBorder), ZP);
 	}

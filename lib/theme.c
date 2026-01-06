@@ -1,7 +1,7 @@
 #include <u.h>
 #include <libc.h>
 #include <draw.h>
-#include "../include/9deui/9deui.h"
+#include <9deui/9deui.h>
 
 static ulong
 rgb24(int r, int g, int b)
