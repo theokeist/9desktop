@@ -1,8 +1,17 @@
 </$objtype/mkfile
 
 TARG=9de-panel
-CFLAGS=-I../../include
+CFLAGS=-DUI9_NO_SYS_HEADERS -I../../include
 OFILES=main.$O
 LIBS=../../lib/lib9deui.a -ldraw -levent
 
-</sys/src/cmd/mkone
+all:V: $TARG
+
+$TARG: $OFILES
+	$LD -o $TARG $OFILES $LIBS
+
+%.6: %.c
+	$CC $CFLAGS -c $stem.c
+
+clean:V:
+	rm -f *.$O $TARG
